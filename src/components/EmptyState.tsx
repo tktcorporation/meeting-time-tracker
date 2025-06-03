@@ -2,7 +2,7 @@ import { BarChart3, Clock, Plus, Sparkles, Users } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 
 interface EmptyStateProps {
-  onAddSample: () => void;
+  onAddSample?: () => void;
 }
 
 export function EmptyState({ onAddSample }: EmptyStateProps) {
@@ -53,7 +53,8 @@ export function EmptyState({ onAddSample }: EmptyStateProps) {
       <button
         type="button"
         onClick={onAddSample}
-        className="group relative px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-all transform hover:scale-105"
+        disabled={!onAddSample}
+        className="group relative px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="flex items-center gap-2">
           <Sparkles className="w-5 h-5" />

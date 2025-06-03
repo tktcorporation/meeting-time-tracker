@@ -185,17 +185,17 @@ function MeetingTimeTracker() {
     }
   };
 
-  const loadMeeting = (meeting: Meeting) => {
-    setAgendaItems(
-      meeting.agendaItems.map((item) => ({
-        ...item,
-        isActive: false,
-        startTime: undefined,
-        elapsedTime: 0,
-      })),
-    );
-    setIsRunning(false);
-  };
+  // const loadMeeting = (meeting: Meeting) => {
+  //   setAgendaItems(
+  //     meeting.agendaItems.map((item) => ({
+  //       ...item,
+  //       isActive: false,
+  //       startTime: undefined,
+  //       elapsedTime: 0,
+  //     })),
+  //   );
+  //   setIsRunning(false);
+  // };
 
   const getCurrentElapsed = (item: AgendaItem): number => {
     if (item.isActive && item.startTime) {
@@ -204,26 +204,26 @@ function MeetingTimeTracker() {
     return item.elapsedTime;
   };
 
-  const formatTime = (minutes: number): string => {
-    const mins = Math.floor(minutes);
-    const secs = Math.floor((minutes - mins) * 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+  // const formatTime = (minutes: number): string => {
+  //   const mins = Math.floor(minutes);
+  //   const secs = Math.floor((minutes - mins) * 60);
+  //   return `${mins}:${secs.toString().padStart(2, "0")}`;
+  // };
 
-  const totalEstimated = agendaItems.reduce(
-    (sum, item) => sum + item.estimatedMinutes,
-    0,
-  );
-  const totalActual = agendaItems.reduce(
-    (sum, item) => sum + (item.actualMinutes || 0),
-    0,
-  );
+  // const totalEstimated = agendaItems.reduce(
+  //   (sum, item) => sum + item.estimatedMinutes,
+  //   0,
+  // );
+  // const totalActual = agendaItems.reduce(
+  //   (sum, item) => sum + (item.actualMinutes || 0),
+  //   0,
+  // );
 
-  const getTimeDifference = (estimated: number, actual: number): string => {
-    const diff = actual - estimated;
-    const sign = diff >= 0 ? "+" : "";
-    return `${sign}${formatTime(Math.abs(diff))}`;
-  };
+  // const getTimeDifference = (estimated: number, actual: number): string => {
+  //   const diff = actual - estimated;
+  //   const sign = diff >= 0 ? "+" : "";
+  //   return `${sign}${formatTime(Math.abs(diff))}`;
+  // };
 
   const completedItems = agendaItems.filter((item) => item.actualMinutes);
   const allItemsComplete =
