@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Plus, Play, Pause, RotateCcw, History, BarChart3 } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export const Route = createFileRoute('/')({
 	component: MeetingTimeTracker,
@@ -23,6 +24,7 @@ interface Meeting {
 }
 
 function MeetingTimeTracker() {
+	const { t } = useLanguage()
 	const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([])
 	const [newItemName, setNewItemName] = useState('')
 	const [newItemTime, setNewItemTime] = useState('')
@@ -189,16 +191,16 @@ function MeetingTimeTracker() {
 
 	if (showRetrospective && completedItems.length > 0) {
 		return (
-			<div className="min-h-screen bg-gray-50 p-6">
+			<div className="min-h-screen bg-background p-6">
 				<div className="max-w-4xl mx-auto">
 					<div className="flex justify-between items-center mb-8">
-						<h1 className="text-3xl font-bold text-gray-900">Meeting Retrospective</h1>
+						<h1 className="text-3xl font-bold text-foreground">{t('meeting.retrospective')}</h1>
 						<button
 							type="button"
 							onClick={() => setShowRetrospective(false)}
 							className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
 						>
-							Back to Tracker
+							{t('meeting.backToTracker')}
 						</button>
 					</div>
 
@@ -277,14 +279,14 @@ function MeetingTimeTracker() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50 p-6">
+		<div className="min-h-screen bg-background p-6">
 			<div className="max-w-4xl mx-auto">
-				<h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-					Meeting Time Tracker
+				<h1 className="text-3xl font-bold text-foreground mb-8 text-center">
+					{t('meeting.title')}
 				</h1>
 
-				<div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-					<h2 className="text-xl font-semibold mb-4">Add Agenda Item</h2>
+				<div className="bg-card rounded-lg shadow-lg p-6 mb-6">
+					<h2 className="text-xl font-semibold mb-4 text-card-foreground">{t('agenda.add')}</h2>
 					<div className="flex gap-4 items-end">
 						<div className="flex-1">
 							<label htmlFor="topic-name" className="block text-sm font-medium text-gray-700 mb-1">
