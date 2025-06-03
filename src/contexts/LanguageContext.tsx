@@ -54,7 +54,11 @@ const translations: Record<Language, Translations> = {
 		'retrospective.overallDifference': 'Overall Difference',
 		'nav.home': 'Home',
 		'nav.toggleLanguage': 'Toggle Language',
-		'nav.toggleTheme': 'Toggle Theme'
+		'nav.toggleTheme': 'Toggle Theme',
+		'onboarding.step1': 'Add Topics',
+		'onboarding.step2': 'Track Time',
+		'onboarding.step3': 'Review Results',
+		'onboarding.tryDemo': 'Try Demo Meeting'
 	},
 	ja: {
 		'meeting.title': '会議時間トラッカー',
@@ -97,7 +101,11 @@ const translations: Record<Language, Translations> = {
 		'retrospective.overallDifference': '全体差分',
 		'nav.home': 'ホーム',
 		'nav.toggleLanguage': '言語切替',
-		'nav.toggleTheme': 'テーマ切替'
+		'nav.toggleTheme': 'テーマ切替',
+		'onboarding.step1': 'トピック追加',
+		'onboarding.step2': '時間計測',
+		'onboarding.step3': '結果確認',
+		'onboarding.tryDemo': 'デモ会議を試す'
 	}
 }
 

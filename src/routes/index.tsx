@@ -1,7 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, History, BarChart3 } from 'lucide-react'
+import { Plus, Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
+import { EmptyState } from '../components/EmptyState'
+import { MeetingTimer } from '../components/MeetingTimer'
+import { MeetingProgress } from '../components/MeetingProgress'
 
 export const Route = createFileRoute('/')({
 	component: MeetingTimeTracker,
@@ -189,6 +192,20 @@ function MeetingTimeTracker() {
 	const completedItems = agendaItems.filter(item => item.actualMinutes)
 	const allItemsComplete = agendaItems.length > 0 && agendaItems.every(item => item.actualMinutes)
 
+	const handleAddSampleData = () => {
+		const sampleItems: AgendaItem[] = [
+			{ id: '1', name: t('onboarding.step1'), estimatedMinutes: 5, isActive: false, elapsedTime: 0 },
+			{ id: '2', name: t('onboarding.step2'), estimatedMinutes: 10, isActive: false, elapsedTime: 0 },
+			{ id: '3', name: t('onboarding.step3'), estimatedMinutes: 5, isActive: false, elapsedTime: 0 }
+		]
+		setAgendaItems(sampleItems)
+	}
+
+	const totalElapsed = agendaItems.reduce((sum, item) => {
+		if (item.actualMinutes) return sum + item.actualMinutes * 60000
+		return sum + getCurrentElapsed(item)
+	}, 0)
+
 	if (showRetrospective && completedItems.length > 0) {
 		return (
 			<div className="min-h-screen bg-background p-6">
@@ -280,13 +297,29 @@ function MeetingTimeTracker() {
 
 	return (
 		<div className="min-h-screen bg-background p-6">
-			<div className="max-w-4xl mx-auto">
-				<h1 className="text-3xl font-bold text-foreground mb-8 text-center">
-					{t('meeting.title')}
-				</h1>
+			<div className="max-w-6xl mx-auto">
+				{/* Visual header with icons */}
+				<div className="flex items-center justify-center gap-3 mb-8">
+					<Timer className="w-8 h-8 text-primary" />
+					<h1 className="text-3xl font-bold text-foreground">
+						{t('meeting.title')}
+					</h1>
+					<ListChecks className="w-8 h-8 text-primary" />
+				</div>
 
-				<div className="bg-card rounded-lg shadow-lg p-6 mb-6">
-					<h2 className="text-xl font-semibold mb-4 text-card-foreground">{t('agenda.add')}</h2>
+				{/* Show empty state when no items */}
+				{agendaItems.length === 0 && (
+					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+						<EmptyState onAddSample={handleAddSampleData} />
+					</div>
+				)}
+
+				{/* Add agenda form - more compact with icon */}
+				<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+					<div className="flex items-center gap-2 mb-4">
+						<Plus className="w-5 h-5 text-primary" />
+						<h2 className="text-xl font-semibold text-card-foreground">{t('agenda.add')}</h2>
+					</div>
 					<div className="flex gap-4 items-end">
 						<div className="flex-1">
 							<label htmlFor="topic-name" className="block text-sm font-medium text-muted-foreground mb-1">
@@ -327,10 +360,13 @@ function MeetingTimeTracker() {
 				</div>
 
 				{agendaItems.length > 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
-						<div className="flex justify-between items-center mb-4">
-							<h2 className="text-xl font-semibold text-card-foreground">{t('meeting.progress')}</h2>
-							<div className="flex gap-2 flex-wrap">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+						{/* Timer display */}
+						<div>
+							<MeetingTimer totalElapsed={totalElapsed} isRunning={isRunning} />
+							
+							{/* Control buttons below timer */}
+							<div className="flex gap-2 flex-wrap justify-center mt-4">
 								{!isRunning ? (
 									<button
 										type="button"
@@ -381,7 +417,28 @@ function MeetingTimeTracker() {
 							</div>
 						</div>
 
-						<div className="overflow-x-auto">
+						{/* Progress visualization */}
+						<div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+							<h2 className="text-xl font-semibold mb-6 text-card-foreground flex items-center gap-2">
+								<BarChart3 className="w-5 h-5 text-primary" />
+								{t('meeting.progress')}
+							</h2>
+							<MeetingProgress items={agendaItems} onItemClick={(index) => {
+								if (agendaItems[index].isActive) {
+									completeCurrentItem()
+								}
+							}} />
+						</div>
+					</div>
+				)}
+
+				{/* Detailed table view - now optional */}
+				{agendaItems.length > 0 && (
+					<details className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+						<summary className="cursor-pointer font-semibold text-card-foreground hover:text-primary transition-colors">
+							{t('table.topicName')} - {t('table.details' || 'Detailed View')}
+						</summary>
+						<div className="mt-4 overflow-x-auto">
 							<table className="w-full border-collapse">
 								<thead>
 									<tr className="bg-muted">
@@ -457,7 +514,7 @@ function MeetingTimeTracker() {
 								</span>
 							</div>
 						</div>
-					</div>
+					</details>
 				)}
 
 				{meetingHistory.length > 0 && (
