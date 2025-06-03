@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks } from 'lucide-react'
+import { Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
-import { EmptyState } from '../components/EmptyState'
 import { MeetingTimer } from '../components/MeetingTimer'
 import { MeetingProgress } from '../components/MeetingProgress'
 
@@ -26,11 +25,16 @@ interface Meeting {
 	agendaItems: AgendaItem[]
 }
 
+/**
+ * Main meeting time tracking application component.
+ * 
+ * Orchestrates the entire meeting tracking workflow including agenda management,
+ * time tracking, meeting controls, and progress visualization. Manages meeting state,
+ * timer operations, and persistence of meeting history to localStorage.
+ */
 function MeetingTimeTracker() {
 	const { t } = useLanguage()
 	const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([])
-	const [newItemName, setNewItemName] = useState('')
-	const [newItemTime, setNewItemTime] = useState('')
 	const [isRunning, setIsRunning] = useState(false)
 	const [currentTime, setCurrentTime] = useState(Date.now())
 	const [meetingHistory, setMeetingHistory] = useState<Meeting[]>([])
@@ -54,21 +58,39 @@ function MeetingTimeTracker() {
 		}
 	}, [isRunning])
 
-	const addAgendaItem = () => {
-		if (newItemName.trim() && newItemTime) {
-			const newItem: AgendaItem = {
-				id: Date.now().toString(),
-				name: newItemName.trim(),
-				estimatedMinutes: Number.parseInt(newItemTime),
-				isActive: false,
-				elapsedTime: 0,
-			}
-			setAgendaItems([...agendaItems, newItem])
-			setNewItemName('')
-			setNewItemTime('')
-		}
+
+	/**
+	 * Updates an existing agenda item with new name and estimated time.
+	 * Modifies the agenda item at the specified index without affecting other items.
+	 * 
+	 * @param index - Zero-based index of the item to update
+	 * @param name - New name for the agenda item
+	 * @param estimatedMinutes - New estimated duration in minutes
+	 */
+	const editAgendaItem = (index: number, name: string, estimatedMinutes: number) => {
+		setAgendaItems(items => 
+			items.map((item, i) => 
+				i === index ? { ...item, name, estimatedMinutes } : item
+			)
+		)
 	}
 
+	/**
+	 * Removes an agenda item from the list.
+	 * Permanently deletes the item at the specified index.
+	 * 
+	 * @param index - Zero-based index of the item to remove
+	 */
+	const deleteAgendaItem = (index: number) => {
+		setAgendaItems(items => items.filter((_, i) => i !== index))
+	}
+
+	/**
+	 * Initiates the meeting timer and activates the first incomplete agenda item.
+	 * Sets the meeting state to running and begins tracking time for the first item
+	 * that hasn't been completed yet. Only starts if there are agenda items and
+	 * the meeting is not already running.
+	 */
 	const startMeeting = () => {
 		if (agendaItems.length > 0 && !isRunning) {
 			setIsRunning(true)
@@ -85,6 +107,11 @@ function MeetingTimeTracker() {
 		}
 	}
 
+	/**
+	 * Pauses the meeting timer and saves elapsed time for the active item.
+	 * Stops the global timer and accumulates elapsed time for any currently
+	 * active agenda item, preserving progress without completing the item.
+	 */
 	const pauseMeeting = () => {
 		setIsRunning(false)
 		setAgendaItems(items =>
@@ -101,6 +128,11 @@ function MeetingTimeTracker() {
 		)
 	}
 
+	/**
+	 * Marks the currently active agenda item as complete and advances to the next item.
+	 * Calculates the total elapsed time for the active item, saves it as actualMinutes,
+	 * and automatically activates the next incomplete item if the meeting is still running.
+	 */
 	const completeCurrentItem = () => {
 		const activeIndex = agendaItems.findIndex(item => item.isActive)
 		if (activeIndex !== -1) {
@@ -130,6 +162,11 @@ function MeetingTimeTracker() {
 		}
 	}
 
+	/**
+	 * Resets the entire meeting to its initial state.
+	 * Stops the timer and clears all progress data including actual times,
+	 * active states, and elapsed time for all agenda items.
+	 */
 	const resetMeeting = () => {
 		setIsRunning(false)
 		setAgendaItems(items =>
@@ -143,6 +180,11 @@ function MeetingTimeTracker() {
 		)
 	}
 
+	/**
+	 * Saves the completed meeting to localStorage history.
+	 * Creates a meeting record with completed items only and adds it to the
+	 * history list (max 10 entries). Only saves if there are completed items.
+	 */
 	const saveMeeting = () => {
 		if (agendaItems.length > 0 && agendaItems.some(item => item.actualMinutes)) {
 			const meeting: Meeting = {
@@ -156,6 +198,13 @@ function MeetingTimeTracker() {
 		}
 	}
 
+	/**
+	 * Loads a previously saved meeting from history.
+	 * Replaces current agenda items with the saved meeting's items,
+	 * resetting all timing data to prepare for a new session.
+	 * 
+	 * @param meeting - The meeting object to load from history
+	 */
 	const loadMeeting = (meeting: Meeting) => {
 		setAgendaItems(meeting.agendaItems.map(item => ({
 			...item,
@@ -166,6 +215,14 @@ function MeetingTimeTracker() {
 		setIsRunning(false)
 	}
 
+	/**
+	 * Calculates the current elapsed time for an agenda item.
+	 * For active items with a start time, includes real-time progress.
+	 * For inactive items, returns the accumulated elapsed time.
+	 * 
+	 * @param item - The agenda item to calculate elapsed time for
+	 * @returns Elapsed time in milliseconds
+	 */
 	const getCurrentElapsed = (item: AgendaItem): number => {
 		if (item.isActive && item.startTime) {
 			return item.elapsedTime + (currentTime - item.startTime)
@@ -173,6 +230,14 @@ function MeetingTimeTracker() {
 		return item.elapsedTime
 	}
 
+	/**
+	 * Formats time duration into MM:SS string format.
+	 * Converts decimal minutes into a readable time display with
+	 * zero-padded seconds for consistent formatting.
+	 * 
+	 * @param minutes - Time duration in decimal minutes
+	 * @returns Formatted time string in MM:SS format
+	 */
 	const formatTime = (minutes: number): string => {
 		const mins = Math.floor(minutes)
 		const secs = Math.floor((minutes - mins) * 60)
@@ -184,6 +249,12 @@ function MeetingTimeTracker() {
 	const completedItems = agendaItems.filter(item => item.actualMinutes)
 	const allItemsComplete = agendaItems.length > 0 && agendaItems.every(item => item.actualMinutes)
 
+	/**
+	 * Populates the agenda with sample data for demonstration purposes.
+	 * Creates three predefined agenda items with localized names and
+	 * typical meeting durations to help users understand the application.
+	 * Used during onboarding and empty state scenarios.
+	 */
 	const handleAddSampleData = () => {
 		const sampleItems: AgendaItem[] = [
 			{ id: '1', name: t('onboarding.step1'), estimatedMinutes: 5, isActive: false, elapsedTime: 0 },
@@ -210,56 +281,34 @@ function MeetingTimeTracker() {
 					<ListChecks className="w-8 h-8 text-primary" />
 				</div>
 
-				{/* Show empty state when no items */}
-				{agendaItems.length === 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
-						<EmptyState onAddSample={handleAddSampleData} />
-					</div>
-				)}
 
-				{/* Add agenda form - more compact with icon */}
+				{/* Unified agenda items list */}
 				<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
-					<div className="flex items-center gap-2 mb-4">
-						<Plus className="w-5 h-5 text-primary" />
-						<h2 className="text-xl font-semibold text-card-foreground">{t('agenda.add')}</h2>
-					</div>
-					<div className="flex gap-4 items-end">
-						<div className="flex-1">
-							<label htmlFor="topic-name" className="block text-sm font-medium text-muted-foreground mb-1">
-								{t('agenda.topicName')}
-							</label>
-							<input
-								id="topic-name"
-								type="text"
-								value={newItemName}
-								onChange={(e) => setNewItemName(e.target.value)}
-								className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-								placeholder={t('agenda.topicNamePlaceholder')}
-							/>
-						</div>
-						<div>
-							<label htmlFor="estimated-time" className="block text-sm font-medium text-muted-foreground mb-1">
-								{t('agenda.estimatedTime')}
-							</label>
-							<input
-								id="estimated-time"
-								type="number"
-								value={newItemTime}
-								onChange={(e) => setNewItemTime(e.target.value)}
-								className="w-24 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-								placeholder={t('agenda.estimatedTimePlaceholder')}
-								min="1"
-							/>
-						</div>
-						<button
-							type="button"
-							onClick={addAgendaItem}
-							className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-						>
-							<Plus size={16} />
-							{t('button.add')}
-						</button>
-					</div>
+					<h2 className="text-xl font-semibold mb-6 text-card-foreground flex items-center gap-2">
+						<ListChecks className="w-5 h-5 text-primary" />
+						{t('agenda.itemsList')}
+					</h2>
+					<MeetingProgress 
+						items={agendaItems} 
+						onItemClick={(index) => {
+							if (agendaItems[index].isActive) {
+								completeCurrentItem()
+							}
+						}}
+						onItemEdit={editAgendaItem}
+						onItemDelete={deleteAgendaItem}
+						onItemAdd={(name, estimatedMinutes) => {
+							const newItem: AgendaItem = {
+								id: Date.now().toString(),
+								name,
+								estimatedMinutes,
+								isActive: false,
+								elapsedTime: 0,
+							}
+							setAgendaItems([...agendaItems, newItem])
+						}}
+						onAddSample={handleAddSampleData}
+					/>
 				</div>
 
 				{agendaItems.length > 0 && (
@@ -310,17 +359,35 @@ function MeetingTimeTracker() {
 							</div>
 						</div>
 
-						{/* Progress visualization */}
+						{/* Progress summary card */}
 						<div className="bg-card rounded-lg shadow-lg p-6 border border-border">
 							<h2 className="text-xl font-semibold mb-6 text-card-foreground flex items-center gap-2">
 								<BarChart3 className="w-5 h-5 text-primary" />
 								{t('meeting.progress')}
 							</h2>
-							<MeetingProgress items={agendaItems} onItemClick={(index) => {
-								if (agendaItems[index].isActive) {
-									completeCurrentItem()
-								}
-							}} />
+							<div className="space-y-4">
+								<div className="relative">
+									<div className="h-4 bg-muted rounded-full overflow-hidden">
+										<div 
+											className="h-full bg-primary transition-all duration-500 ease-out"
+											style={{ width: `${Math.min((totalActual / totalEstimated) * 100, 100) || 0}%` }}
+										/>
+									</div>
+									<div className="mt-2 text-center text-sm text-muted-foreground">
+										{Math.round((totalActual / totalEstimated) * 100) || 0}% {t('meeting.complete')}
+									</div>
+								</div>
+								<div className="grid grid-cols-2 gap-4 text-sm">
+									<div className="text-center">
+										<div className="font-semibold text-lg">{formatTime(totalEstimated)}</div>
+										<div className="text-muted-foreground">{t('total.estimated')}</div>
+									</div>
+									<div className="text-center">
+										<div className="font-semibold text-lg">{formatTime(totalActual)}</div>
+										<div className="text-muted-foreground">{t('total.actual')}</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				)}

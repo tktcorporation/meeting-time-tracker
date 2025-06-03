@@ -140,6 +140,22 @@ Defined in `src/integrations/trpc/router.ts` with meeting-related procedures:
 - **Visual Feedback**: Clear active states, progress indicators, and status visibility
 - **Efficient Navigation**: Streamlined interface focusing on core meeting tracking functionality
 
+### Code Documentation Standards
+- **Function Documentation**: ALL functions must include JSDoc docstrings explaining:
+  - Purpose and intent of the function
+  - Role within the component/module
+  - Parameters and their types (if not obvious from TypeScript)
+  - Return value and its purpose
+  - Side effects or state changes
+  - Usage examples for complex functions
+- **Component Documentation**: React components should include:
+  - Component purpose and responsibilities
+  - Props interface documentation
+  - Key behaviors and interactions
+  - Usage patterns and examples
+- **Documentation Format**: Use JSDoc standard with `/**` style comments
+- **Maintenance**: Update docstrings when function behavior changes
+
 ### Important Reminders
 - Always use theme-aware CSS classes instead of hard-coded colors
 - Always use the translation function `t()` for all user-facing text
@@ -147,3 +163,4 @@ Defined in `src/integrations/trpc/router.ts` with meeting-related procedures:
 - Ensure all interactive elements meet touch accessibility standards (44-48px minimum)
 - Run `bun run lint` before committing to ensure code quality
 - The route tree (`routeTree.gen.ts`) is auto-generated - never edit it manually
+- **ALWAYS document functions with JSDoc docstrings** explaining purpose, role, and behavior
