@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(gh issue view:*)",
-      "Bash(bun run:*)"
+      "Bash(bun run:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(timeout:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

@@ -10,7 +10,6 @@ import Header from '../components/Header'
 import { ThemeProvider } from '../contexts/ThemeContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
 
-import TanStackQueryLayout from '../integrations/tanstack-query/layout.tsx'
 
 import appCss from '../styles.css?url'
 
@@ -36,7 +35,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Meeting Time Tracker',
       },
     ],
     links: [
@@ -55,8 +54,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
           <Outlet />
           <TanStackRouterDevtools />
-
-          <TanStackQueryLayout />
         </LanguageProvider>
       </ThemeProvider>
     </RootDocument>
