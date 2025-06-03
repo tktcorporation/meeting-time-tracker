@@ -9,7 +9,11 @@
     "serve": "vite preview",
     "test": "vitest run",
     "format": "biome format",
-    "lint": "biome lint",
+    "lint": "bun run lint:biome && bun run lint:action",
+    "lint:fix": "bun run lint:biome:fix && bun run lint:action",
+    "lint:biome": "biome lint",
+    "lint:biome:fix": "biome lint --write",
+    "lint:action": "node-actionlint",
     "check": "biome check"
   },
   "dependencies": {
@@ -42,6 +46,7 @@
     "@biomejs/biome": "1.9.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
+    "@tktco/node-actionlint": "^1.5.2",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
