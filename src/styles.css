@@ -174,3 +174,7 @@ code {
 .delay-300 {
   animation-delay: 300ms;
 }
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}

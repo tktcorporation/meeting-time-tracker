@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as RetrospectiveImport } from './routes/retrospective'
+import { Route as HistoryImport } from './routes/history'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
@@ -19,6 +20,12 @@ import { Route as IndexImport } from './routes/index'
 const RetrospectiveRoute = RetrospectiveImport.update({
   id: '/retrospective',
   path: '/retrospective',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const HistoryRoute = HistoryImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,6 +46,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryImport
+      parentRoute: typeof rootRoute
+    }
     '/retrospective': {
       id: '/retrospective'
       path: '/retrospective'
@@ -53,36 +67,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/retrospective': typeof RetrospectiveRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/retrospective': typeof RetrospectiveRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/retrospective': typeof RetrospectiveRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/retrospective'
+  fullPaths: '/' | '/history' | '/retrospective'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/retrospective'
-  id: '__root__' | '/' | '/retrospective'
+  to: '/' | '/history' | '/retrospective'
+  id: '__root__' | '/' | '/history' | '/retrospective'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HistoryRoute: typeof HistoryRoute
   RetrospectiveRoute: typeof RetrospectiveRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HistoryRoute: HistoryRoute,
   RetrospectiveRoute: RetrospectiveRoute,
 }
 
@@ -97,11 +116,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/history",
         "/retrospective"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/history": {
+      "filePath": "history.tsx"
     },
     "/retrospective": {
       "filePath": "retrospective.tsx"

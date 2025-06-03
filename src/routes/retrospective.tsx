@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Header } from "../components/Header";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export const Route = createFileRoute("/retrospective")({
@@ -53,22 +54,9 @@ function Retrospective() {
 
   if (meetingHistory.length === 0) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-8">
-            <Link
-              to="/"
-              className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
-            >
-              <ArrowLeft size={16} />
-              {t("meeting.backToTracker")}
-            </Link>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <BarChart3 className="w-8 h-8 text-primary" />
-              {t("meeting.retrospective")}
-            </h1>
-          </div>
-
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="max-w-4xl mx-auto p-6 pb-20">
           <div className="bg-card rounded-lg shadow-lg p-8 border border-border text-center">
             <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2 text-card-foreground">
@@ -84,7 +72,7 @@ function Retrospective() {
               {t("retrospective.startFirstMeeting")}
             </Link>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -101,22 +89,9 @@ function Retrospective() {
   );
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Link
-            to="/"
-            className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            {t("meeting.backToTracker")}
-          </Link>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-            <BarChart3 className="w-8 h-8 text-primary" />
-            {t("meeting.retrospective")}
-          </h1>
-        </div>
-
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="max-w-6xl mx-auto p-6 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Meeting History Sidebar */}
           <div className="lg:col-span-1">
@@ -287,7 +262,7 @@ function Retrospective() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

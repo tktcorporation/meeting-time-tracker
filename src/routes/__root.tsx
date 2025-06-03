@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import Header from "../components/Header";
+import { Header } from "../components/Header";
 import { LanguageProvider } from "../contexts/LanguageContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 

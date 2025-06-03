@@ -6,9 +6,9 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Timer,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Header } from "../components/Header";
 import { MeetingProgress } from "../components/MeetingProgress";
 import { MeetingTimer } from "../components/MeetingTimer";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -253,17 +253,9 @@ function MeetingTimeTracker() {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Visual header with icons */}
-        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-          <Timer className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center">
-            {t("meeting.title")}
-          </h1>
-          <ListChecks className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-        </div>
-
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="max-w-6xl mx-auto p-4 sm:p-6 pb-20">
         {/* Unified Agenda Management and Progress */}
         <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
           <div className="flex items-center gap-2 mb-6">
@@ -390,46 +382,7 @@ function MeetingTimeTracker() {
             </div>
           </div>
         )}
-
-        {meetingHistory.length > 0 && (
-          <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
-            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">
-              {t("history.title")}
-            </h2>
-            <div className="space-y-3">
-              {meetingHistory.map((meeting) => (
-                <div
-                  key={meeting.id}
-                  className="flex justify-between items-center p-3 bg-muted rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium">
-                      {new Date(meeting.date).toLocaleDateString()} -{" "}
-                      {meeting.agendaItems.length} {t("history.items")}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t("history.total")}{" "}
-                      {formatTime(
-                        meeting.agendaItems.reduce(
-                          (sum, item) => sum + (item.actualMinutes || 0),
-                          0,
-                        ),
-                      )}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => loadMeeting(meeting)}
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors min-h-[40px]"
-                  >
-                    {t("button.load")}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 }
