@@ -11,8 +11,8 @@
     "format": "biome format",
     "lint": "bun run lint:biome && bun run lint:action",
     "lint:fix": "bun run lint:biome:fix && bun run lint:action",
-    "lint:biome": "biome lint",
-    "lint:biome:fix": "biome lint --write",
+    "lint:biome": "biome check",
+    "lint:biome:fix": "biome check --write",
     "lint:action": "node-actionlint",
     "check": "biome check"
   },
