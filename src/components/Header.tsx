@@ -11,11 +11,7 @@ export default function Header() {
 
 	return (
 		<header className="p-2 flex gap-2 bg-background text-foreground border-b border-border justify-between">
-			<nav className="flex flex-row items-center gap-4">
-				<div className="px-2 font-bold text-lg">
-					{t('meeting.title')}
-				</div>
-				<div className="flex gap-1">
+			<nav className="flex flex-row items-center gap-1">
 					<Link
 						to="/"
 						className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
@@ -38,7 +34,6 @@ export default function Header() {
 						<BarChart3 size={16} />
 						{t('nav.retrospective')}
 					</Link>
-				</div>
 			</nav>
 
 			<div className="flex items-center gap-2">
