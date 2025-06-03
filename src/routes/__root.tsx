@@ -8,22 +8,9 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import Header from '../components/Header'
 
-import TanStackQueryLayout from '../integrations/tanstack-query/layout.tsx'
-
 import appCss from '../styles.css?url'
 
-import type { QueryClient } from '@tanstack/react-query'
-
-import type { TRPCRouter } from '@/integrations/trpc/router'
-import type { TRPCOptionsProxy } from '@trpc/tanstack-react-query'
-
-interface MyRouterContext {
-  queryClient: QueryClient
-
-  trpc: TRPCOptionsProxy<TRPCRouter>
-}
-
-export const Route = createRootRouteWithContext<MyRouterContext>()({
+export const Route = createRootRouteWithContext()({
   head: () => ({
     meta: [
       {
@@ -51,8 +38,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
       <Outlet />
       <TanStackRouterDevtools />
-
-      <TanStackQueryLayout />
     </RootDocument>
   ),
 })
