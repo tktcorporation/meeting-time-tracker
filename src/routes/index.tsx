@@ -246,23 +246,23 @@ function MeetingTimeTracker() {
 	return (
 		<div className="min-h-screen bg-background p-4 sm:p-6">
 			<div className="max-w-6xl mx-auto">
-				{/* Visual header with icons */}
-				<div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-					<Timer className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-					<h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center">
-						{t('meeting.title')}
-					</h1>
-					<ListChecks className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-				</div>
-
-
-				{/* Add agenda form - mobile-first layout */}
+			          {/* Visual header with icons */}
+         <div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+           <Timer className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+           <h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center">
+             {t('meeting.title')}
+           </h1>
+           <ListChecks className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+         </div>
+				{/* Unified Agenda Management */}
 				<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
 					<div className="flex items-center gap-2 mb-4">
-						<Plus className="w-5 h-5 text-primary" />
-						<h2 className="text-lg sm:text-xl font-semibold text-card-foreground">{t('agenda.add')}</h2>
+						<ListChecks className="w-5 h-5 text-primary" />
+						<h2 className="text-lg sm:text-xl font-semibold text-card-foreground">{t('agenda.management')}</h2>
 					</div>
-					<div className="space-y-4">
+					
+					{/* Add new agenda item form */}
+					<div className="space-y-4 mb-6">
 						<div>
 							<label htmlFor="topic-name" className="block text-sm font-medium text-muted-foreground mb-2">
 								{t('agenda.topicName')}
@@ -303,13 +303,11 @@ function MeetingTimeTracker() {
 					</div>
 				</div>
 
-				{/* Agenda Items List */}
+				
+				{/* Agenda items list */}
 				{agendaItems.length > 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
-						<h2 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground flex items-center gap-2">
-							<ListChecks className="w-5 h-5 text-primary" />
-							{t('agenda.items')}
-						</h2>
+					<div className="border-t border-border pt-4">
+						<h3 className="text-md font-medium text-muted-foreground mb-3">{t('agenda.currentItems')}</h3>
 						<div className="space-y-3">
 							{agendaItems.map((item) => (
 								<div
@@ -388,8 +386,9 @@ function MeetingTimeTracker() {
 						</div>
 					</div>
 				)}
+			</div>
 
-				{agendaItems.length > 0 && (
+			{agendaItems.length > 0 && (
 					<div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
 						{/* Timer display */}
 						<div>
@@ -461,90 +460,6 @@ function MeetingTimeTracker() {
 					</div>
 				)}
 
-				{/* Detailed table view - now optional */}
-				{agendaItems.length > 0 && (
-					<details className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
-						<summary className="cursor-pointer font-semibold text-card-foreground hover:text-primary transition-colors">
-							{t('table.topicName')} - {t('table.details' || 'Detailed View')}
-						</summary>
-						<div className="mt-4 overflow-x-auto">
-							<table className="w-full border-collapse">
-								<thead>
-									<tr className="bg-muted">
-										<th className="text-left py-2 px-4 border-b border-border">{t('table.topicName')}</th>
-										<th className="text-center py-2 px-4 border-b border-border">{t('table.estimated')}</th>
-										<th className="text-center py-2 px-4 border-b border-border">{t('table.actual')}</th>
-										<th className="text-center py-2 px-4 border-b border-border">{t('table.status')}</th>
-										<th className="text-center py-2 px-4 border-b border-border">{t('table.action')}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{agendaItems.map((item) => {
-										const currentElapsed = getCurrentElapsed(item) / 60000
-										const isOvertime = currentElapsed > item.estimatedMinutes
-										
-										return (
-											<tr
-												key={item.id}
-												className={`${
-													item.isActive ? 'bg-primary/10' : ''
-												} ${isOvertime && item.isActive ? 'bg-destructive/10' : ''}`}
-											>
-												<td className="py-3 px-4 border-b border-border">{item.name}</td>
-												<td className="text-center py-3 px-4 border-b border-border">
-													{formatTime(item.estimatedMinutes)}
-												</td>
-												<td className={`text-center py-3 px-4 border-b border-border ${
-													isOvertime && item.isActive ? 'text-destructive font-semibold' : ''
-												}`}>
-													{item.actualMinutes 
-														? formatTime(item.actualMinutes)
-														: item.isActive 
-															? formatTime(currentElapsed)
-															: '-'
-													}
-												</td>
-												<td className="text-center py-3 px-4 border-b border-border">
-													{item.actualMinutes ? (
-														<span className="text-green-600 dark:text-green-500 font-semibold">{t('status.complete')}</span>
-													) : item.isActive ? (
-														<span className={`font-semibold ${
-															isOvertime ? 'text-destructive' : 'text-primary'
-														}`}>
-															{isOvertime ? t('status.overtime') : t('status.inProgress')}
-														</span>
-													) : (
-														<span className="text-muted-foreground">{t('status.pending')}</span>
-													)}
-												</td>
-												<td className="text-center py-3 px-4 border-b border-border">
-													{item.isActive && (
-														<button
-															type="button"
-															onClick={completeCurrentItem}
-															className="px-4 py-2 bg-green-600 dark:bg-green-600 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-700 transition-colors min-h-[40px]"
-														>
-															{t('button.complete')}
-														</button>
-													)}
-												</td>
-											</tr>
-										)
-									})}
-								</tbody>
-							</table>
-						</div>
-
-						<div className="mt-4 p-4 bg-muted rounded-lg">
-							<div className="flex justify-between items-center text-lg font-semibold">
-								<span>{t('total.time')}</span>
-								<span>
-									{formatTime(totalEstimated)} {t('total.estimated')} / {formatTime(totalActual)} {t('total.actual')}
-								</span>
-							</div>
-						</div>
-					</details>
-				)}
 
 				{meetingHistory.length > 0 && (
 					<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
@@ -573,6 +488,5 @@ function MeetingTimeTracker() {
 					</div>
 				)}
 			</div>
-		</div>
 	)
 }
