@@ -17,7 +17,8 @@
       "Bash(uniq:*)",
       "Bash(wc:*)",
       "Bash(tr:*)",
-      "WebFetch"
+      "WebFetch",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
