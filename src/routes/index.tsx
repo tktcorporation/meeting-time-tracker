@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks } from 'lucide-react'
+import { Plus, Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks, Edit2, Trash2, Check, X } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
-import { EmptyState } from '../components/EmptyState'
 import { MeetingTimer } from '../components/MeetingTimer'
 import { MeetingProgress } from '../components/MeetingProgress'
 
@@ -28,12 +27,24 @@ interface Meeting {
 
 function MeetingTimeTracker() {
 	const { t } = useLanguage()
-	const [agendaItems, setAgendaItems] = useState<AgendaItem[]>([])
+	const [agendaItems, setAgendaItems] = useState<AgendaItem[]>(() => {
+		// Initialize with sample data
+		const now = Date.now()
+		return [
+			{ id: `sample_${now}_1`, name: 'プロジェクト概要説明', estimatedMinutes: 5, isActive: false, elapsedTime: 0 },
+			{ id: `sample_${now}_2`, name: '進捗報告', estimatedMinutes: 10, isActive: false, elapsedTime: 0 },
+			{ id: `sample_${now}_3`, name: '課題とディスカッション', estimatedMinutes: 15, isActive: false, elapsedTime: 0 },
+			{ id: `sample_${now}_4`, name: '次回アクション確認', estimatedMinutes: 5, isActive: false, elapsedTime: 0 }
+		]
+	})
 	const [newItemName, setNewItemName] = useState('')
 	const [newItemTime, setNewItemTime] = useState('')
 	const [isRunning, setIsRunning] = useState(false)
 	const [currentTime, setCurrentTime] = useState(Date.now())
 	const [meetingHistory, setMeetingHistory] = useState<Meeting[]>([])
+	const [editingItem, setEditingItem] = useState<string | null>(null)
+	const [editName, setEditName] = useState('')
+	const [editTime, setEditTime] = useState('')
 
 	useEffect(() => {
 		const saved = localStorage.getItem('meeting-history')
@@ -191,13 +202,39 @@ function MeetingTimeTracker() {
 	const completedItems = agendaItems.filter(item => item.actualMinutes)
 	const allItemsComplete = agendaItems.length > 0 && agendaItems.every(item => item.actualMinutes)
 
-	const handleAddSampleData = () => {
-		const sampleItems: AgendaItem[] = [
-			{ id: '1', name: t('onboarding.step1'), estimatedMinutes: 5, isActive: false, elapsedTime: 0 },
-			{ id: '2', name: t('onboarding.step2'), estimatedMinutes: 10, isActive: false, elapsedTime: 0 },
-			{ id: '3', name: t('onboarding.step3'), estimatedMinutes: 5, isActive: false, elapsedTime: 0 }
-		]
-		setAgendaItems(sampleItems)
+	const deleteAgendaItem = (id: string) => {
+		setAgendaItems(items => items.filter(item => item.id !== id))
+	}
+
+	const editAgendaItem = (id: string, newName: string, newEstimatedMinutes: number) => {
+		setAgendaItems(items => 
+			items.map(item => 
+				item.id === id 
+					? { ...item, name: newName, estimatedMinutes: newEstimatedMinutes }
+					: item
+			)
+		)
+	}
+
+	const startEditing = (item: AgendaItem) => {
+		setEditingItem(item.id)
+		setEditName(item.name)
+		setEditTime(item.estimatedMinutes.toString())
+	}
+
+	const saveEdit = () => {
+		if (editingItem && editName.trim() && editTime) {
+			editAgendaItem(editingItem, editName.trim(), Number.parseInt(editTime))
+			setEditingItem(null)
+			setEditName('')
+			setEditTime('')
+		}
+	}
+
+	const cancelEdit = () => {
+		setEditingItem(null)
+		setEditName('')
+		setEditTime('')
 	}
 
 	const totalElapsed = agendaItems.reduce((sum, item) => {
@@ -218,12 +255,6 @@ function MeetingTimeTracker() {
 					<ListChecks className="w-8 h-8 text-primary" />
 				</div>
 
-				{/* Show empty state when no items */}
-				{agendaItems.length === 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
-						<EmptyState onAddSample={handleAddSampleData} />
-					</div>
-				)}
 
 				{/* Add agenda form - more compact with icon */}
 				<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
@@ -269,6 +300,90 @@ function MeetingTimeTracker() {
 						</button>
 					</div>
 				</div>
+
+				{/* Agenda Items List */}
+				{agendaItems.length > 0 && (
+					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+						<h2 className="text-xl font-semibold mb-4 text-card-foreground flex items-center gap-2">
+							<ListChecks className="w-5 h-5 text-primary" />
+							{t('agenda.items')}
+						</h2>
+						<div className="space-y-3">
+							{agendaItems.map((item) => (
+								<div
+									key={item.id}
+									className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+										item.isActive ? 'bg-primary/10 border-primary' : 'bg-muted border-border'
+									}`}
+								>
+									{editingItem === item.id ? (
+										<div className="flex-1 flex items-center gap-2">
+											<input
+												type="text"
+												value={editName}
+												onChange={(e) => setEditName(e.target.value)}
+												className="flex-1 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+											/>
+											<input
+												type="number"
+												value={editTime}
+												onChange={(e) => setEditTime(e.target.value)}
+												className="w-16 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+												min="1"
+											/>
+											<span className="text-sm text-muted-foreground">{t('time.minutes')}</span>
+											<button
+												type="button"
+												onClick={saveEdit}
+												className="p-1 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/20 rounded"
+											>
+												<Check size={16} />
+											</button>
+											<button
+												type="button"
+												onClick={cancelEdit}
+												className="p-1 text-destructive hover:bg-destructive/10 rounded"
+											>
+												<X size={16} />
+											</button>
+										</div>
+									) : (
+										<>
+											<div className="flex-1">
+												<div className="font-medium text-card-foreground">{item.name}</div>
+												<div className="text-sm text-muted-foreground">
+													{t('agenda.estimated')} {formatTime(item.estimatedMinutes)}
+													{item.actualMinutes && ` • ${t('agenda.actual')} ${formatTime(item.actualMinutes)}`}
+													{item.isActive && ` • ${t('agenda.inProgress')}`}
+												</div>
+											</div>
+											{!item.isActive && !item.actualMinutes && (
+												<div className="flex items-center gap-1">
+													<button
+														type="button"
+														onClick={() => startEditing(item)}
+														className="p-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded"
+														title={t('button.edit')}
+													>
+														<Edit2 size={16} />
+													</button>
+													<button
+														type="button"
+														onClick={() => deleteAgendaItem(item.id)}
+														className="p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded"
+														title={t('button.delete')}
+													>
+														<Trash2 size={16} />
+													</button>
+												</div>
+											)}
+										</>
+									)}
+								</div>
+							))}
+						</div>
+					</div>
+				)}
 
 				{agendaItems.length > 0 && (
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

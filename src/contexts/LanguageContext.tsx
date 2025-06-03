@@ -63,7 +63,16 @@ const translations: Record<Language, Translations> = {
 		'onboarding.tryDemo': 'Try Demo Meeting',
 		'retrospective.noData': 'No Meeting Data',
 		'retrospective.noDataDescription': 'You haven\'t completed any meetings yet. Start tracking a meeting to view retrospective analysis.',
-		'retrospective.startFirstMeeting': 'Start Your First Meeting'
+		'retrospective.startFirstMeeting': 'Start Your First Meeting',
+		'agenda.items': 'Agenda Items',
+		'agenda.estimated': 'Est:',
+		'agenda.actual': 'Actual:',
+		'agenda.inProgress': 'In Progress',
+		'button.edit': 'Edit',
+		'button.delete': 'Delete',
+		'button.save': 'Save',
+		'button.cancel': 'Cancel',
+		'time.minutes': 'min'
 	},
 	ja: {
 		'meeting.title': '会議時間トラッカー',
@@ -115,7 +124,16 @@ const translations: Record<Language, Translations> = {
 		'onboarding.tryDemo': 'デモ会議を試す',
 		'retrospective.noData': '会議データなし',
 		'retrospective.noDataDescription': 'まだ会議を完了していません。会議の振り返り分析を表示するには、会議のトラッキングを開始してください。',
-		'retrospective.startFirstMeeting': '最初の会議を開始'
+		'retrospective.startFirstMeeting': '最初の会議を開始',
+		'agenda.items': 'アジェンダ項目',
+		'agenda.estimated': '予定:',
+		'agenda.actual': '実際:',
+		'agenda.inProgress': '進行中',
+		'button.edit': '編集',
+		'button.delete': '削除',
+		'button.save': '保存',
+		'button.cancel': 'キャンセル',
+		'time.minutes': '分'
 	}
 }
 
