@@ -3,7 +3,8 @@
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/node:1": {},
-		"ghcr.io/michidk/devcontainers-features/bun:1": {}
+		"ghcr.io/michidk/devcontainers-features/bun:1": {},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
 	},
 	"forwardPorts": [5173, 8787],
 	"portsAttributes": {
