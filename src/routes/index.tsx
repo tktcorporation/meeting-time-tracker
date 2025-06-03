@@ -244,27 +244,27 @@ function MeetingTimeTracker() {
 
 
 	return (
-		<div className="min-h-screen bg-background p-6">
+		<div className="min-h-screen bg-background p-4 sm:p-6">
 			<div className="max-w-6xl mx-auto">
 				{/* Visual header with icons */}
-				<div className="flex items-center justify-center gap-3 mb-8">
-					<Timer className="w-8 h-8 text-primary" />
-					<h1 className="text-3xl font-bold text-foreground">
+				<div className="flex items-center justify-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+					<Timer className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+					<h1 className="text-2xl sm:text-3xl font-bold text-foreground text-center">
 						{t('meeting.title')}
 					</h1>
-					<ListChecks className="w-8 h-8 text-primary" />
+					<ListChecks className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
 				</div>
 
 
-				{/* Add agenda form - more compact with icon */}
-				<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+				{/* Add agenda form - mobile-first layout */}
+				<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
 					<div className="flex items-center gap-2 mb-4">
 						<Plus className="w-5 h-5 text-primary" />
-						<h2 className="text-xl font-semibold text-card-foreground">{t('agenda.add')}</h2>
+						<h2 className="text-lg sm:text-xl font-semibold text-card-foreground">{t('agenda.add')}</h2>
 					</div>
-					<div className="flex gap-4 items-end">
-						<div className="flex-1">
-							<label htmlFor="topic-name" className="block text-sm font-medium text-muted-foreground mb-1">
+					<div className="space-y-4">
+						<div>
+							<label htmlFor="topic-name" className="block text-sm font-medium text-muted-foreground mb-2">
 								{t('agenda.topicName')}
 							</label>
 							<input
@@ -272,39 +272,41 @@ function MeetingTimeTracker() {
 								type="text"
 								value={newItemName}
 								onChange={(e) => setNewItemName(e.target.value)}
-								className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+								className="w-full px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground text-base"
 								placeholder={t('agenda.topicNamePlaceholder')}
 							/>
 						</div>
-						<div>
-							<label htmlFor="estimated-time" className="block text-sm font-medium text-muted-foreground mb-1">
-								{t('agenda.estimatedTime')}
-							</label>
-							<input
-								id="estimated-time"
-								type="number"
-								value={newItemTime}
-								onChange={(e) => setNewItemTime(e.target.value)}
-								className="w-24 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-								placeholder={t('agenda.estimatedTimePlaceholder')}
-								min="1"
-							/>
+						<div className="flex gap-3">
+							<div className="flex-1">
+								<label htmlFor="estimated-time" className="block text-sm font-medium text-muted-foreground mb-2">
+									{t('agenda.estimatedTime')}
+								</label>
+								<input
+									id="estimated-time"
+									type="number"
+									value={newItemTime}
+									onChange={(e) => setNewItemTime(e.target.value)}
+									className="w-full px-4 py-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground text-base"
+									placeholder={t('agenda.estimatedTimePlaceholder')}
+									min="1"
+								/>
+							</div>
+							<button
+								type="button"
+								onClick={addAgendaItem}
+								className="self-end px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 min-h-[48px] font-medium"
+							>
+								<Plus size={18} />
+								<span className="hidden sm:inline">{t('button.add')}</span>
+							</button>
 						</div>
-						<button
-							type="button"
-							onClick={addAgendaItem}
-							className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-						>
-							<Plus size={16} />
-							{t('button.add')}
-						</button>
 					</div>
 				</div>
 
 				{/* Agenda Items List */}
 				{agendaItems.length > 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
-						<h2 className="text-xl font-semibold mb-4 text-card-foreground flex items-center gap-2">
+					<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
+						<h2 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground flex items-center gap-2">
 							<ListChecks className="w-5 h-5 text-primary" />
 							{t('agenda.items')}
 						</h2>
@@ -317,35 +319,37 @@ function MeetingTimeTracker() {
 									}`}
 								>
 									{editingItem === item.id ? (
-										<div className="flex-1 flex items-center gap-2">
+										<div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2">
 											<input
 												type="text"
 												value={editName}
 												onChange={(e) => setEditName(e.target.value)}
-												className="flex-1 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+												className="flex-1 px-3 py-2 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground text-base"
 											/>
-											<input
-												type="number"
-												value={editTime}
-												onChange={(e) => setEditTime(e.target.value)}
-												className="w-16 px-2 py-1 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-												min="1"
-											/>
-											<span className="text-sm text-muted-foreground">{t('time.minutes')}</span>
-											<button
-												type="button"
-												onClick={saveEdit}
-												className="p-1 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/20 rounded"
-											>
-												<Check size={16} />
-											</button>
-											<button
-												type="button"
-												onClick={cancelEdit}
-												className="p-1 text-destructive hover:bg-destructive/10 rounded"
-											>
-												<X size={16} />
-											</button>
+											<div className="flex items-center gap-2">
+												<input
+													type="number"
+													value={editTime}
+													onChange={(e) => setEditTime(e.target.value)}
+													className="w-20 px-3 py-2 border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground text-base"
+													min="1"
+												/>
+												<span className="text-sm text-muted-foreground">{t('time.minutes')}</span>
+												<button
+													type="button"
+													onClick={saveEdit}
+													className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/20 rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
+												>
+													<Check size={18} />
+												</button>
+												<button
+													type="button"
+													onClick={cancelEdit}
+													className="p-2 text-destructive hover:bg-destructive/10 rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
+												>
+													<X size={18} />
+												</button>
+											</div>
 										</div>
 									) : (
 										<>
@@ -358,22 +362,22 @@ function MeetingTimeTracker() {
 												</div>
 											</div>
 											{!item.isActive && !item.actualMinutes && (
-												<div className="flex items-center gap-1">
+												<div className="flex items-center gap-2">
 													<button
 														type="button"
 														onClick={() => startEditing(item)}
-														className="p-1 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded"
+														className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
 														title={t('button.edit')}
 													>
-														<Edit2 size={16} />
+														<Edit2 size={18} />
 													</button>
 													<button
 														type="button"
 														onClick={() => deleteAgendaItem(item.id)}
-														className="p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded"
+														className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
 														title={t('button.delete')}
 													>
-														<Trash2 size={16} />
+														<Trash2 size={18} />
 													</button>
 												</div>
 											)}
@@ -386,7 +390,7 @@ function MeetingTimeTracker() {
 				)}
 
 				{agendaItems.length > 0 && (
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+					<div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
 						{/* Timer display */}
 						<div>
 							<MeetingTimer totalElapsed={totalElapsed} isRunning={isRunning} />
@@ -397,45 +401,45 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={startMeeting}
-										className="px-4 py-2 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2"
+										className="px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
 									>
-										<Play size={16} />
+										<Play size={18} />
 										{t('button.startMeeting')}
 									</button>
 								) : (
 									<button
 										type="button"
 										onClick={pauseMeeting}
-										className="px-4 py-2 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2"
+										className="px-6 py-3 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
 									>
-										<Pause size={16} />
+										<Pause size={18} />
 										{t('button.pause')}
 									</button>
 								)}
 								<button
 									type="button"
 									onClick={resetMeeting}
-									className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2"
+									className="px-6 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
 								>
-									<RotateCcw size={16} />
+									<RotateCcw size={18} />
 									{t('button.reset')}
 								</button>
 								{allItemsComplete && (
 									<button
 										type="button"
 										onClick={saveMeeting}
-										className="px-4 py-2 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2"
+										className="px-6 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
 									>
-										<History size={16} />
+										<History size={18} />
 										{t('button.saveMeeting')}
 									</button>
 								)}
 								{completedItems.length > 0 && (
 									<Link
 										to="/retrospective"
-										className="px-4 py-2 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2"
+										className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
 									>
-										<BarChart3 size={16} />
+										<BarChart3 size={18} />
 										{t('button.retrospective')}
 									</Link>
 								)}
@@ -443,8 +447,8 @@ function MeetingTimeTracker() {
 						</div>
 
 						{/* Progress visualization */}
-						<div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-							<h2 className="text-xl font-semibold mb-6 text-card-foreground flex items-center gap-2">
+						<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
+							<h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-card-foreground flex items-center gap-2">
 								<BarChart3 className="w-5 h-5 text-primary" />
 								{t('meeting.progress')}
 							</h2>
@@ -459,7 +463,7 @@ function MeetingTimeTracker() {
 
 				{/* Detailed table view - now optional */}
 				{agendaItems.length > 0 && (
-					<details className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+					<details className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
 						<summary className="cursor-pointer font-semibold text-card-foreground hover:text-primary transition-colors">
 							{t('table.topicName')} - {t('table.details' || 'Detailed View')}
 						</summary>
@@ -518,7 +522,7 @@ function MeetingTimeTracker() {
 														<button
 															type="button"
 															onClick={completeCurrentItem}
-															className="px-3 py-1 bg-green-600 dark:bg-green-600 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-700 transition-colors"
+															className="px-4 py-2 bg-green-600 dark:bg-green-600 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-700 transition-colors min-h-[40px]"
 														>
 															{t('button.complete')}
 														</button>
@@ -543,8 +547,8 @@ function MeetingTimeTracker() {
 				)}
 
 				{meetingHistory.length > 0 && (
-					<div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-						<h2 className="text-xl font-semibold mb-4 text-card-foreground">{t('history.title')}</h2>
+					<div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
+						<h2 className="text-lg sm:text-xl font-semibold mb-4 text-card-foreground">{t('history.title')}</h2>
 						<div className="space-y-3">
 							{meetingHistory.map((meeting) => (
 								<div key={meeting.id} className="flex justify-between items-center p-3 bg-muted rounded-lg">
@@ -559,7 +563,7 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={() => loadMeeting(meeting)}
-										className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors"
+										className="px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90 transition-colors min-h-[40px]"
 									>
 										{t('button.load')}
 									</button>

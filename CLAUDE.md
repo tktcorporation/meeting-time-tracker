@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Meeting Time Tracker Application
 
-This is a meeting time tracking application that helps monitor meeting progress and generate retrospectives. The app supports:
+This is a **mobile-first** meeting time tracking application that helps monitor meeting progress and generate retrospectives. The app supports:
 - Real-time meeting time tracking with visual progress indicators
 - Multi-language support (English/Japanese)
-- Light/Dark theme switching
+- Light/Dark theme switching with accessibility-focused color contrast
 - Meeting history and retrospectives
+- Touch-friendly mobile interface with responsive design
 
 ## Development Commands
 
@@ -83,11 +84,13 @@ Defined in `src/integrations/trpc/router.ts` with meeting-related procedures:
 - Separate client/server schemas
 
 ### Styling Guidelines
-- **Tailwind CSS v4** with Shadcn/ui components
+- **Mobile-First Design**: All components designed for mobile screens first, then enhanced for larger screens
+- **Tailwind CSS v4** with Shadcn/ui components and responsive breakpoints (`sm:`, `lg:`)
 - **Tab indentation** enforced by Biome
 - **CSS Variables** for all colors to support theme switching
 - **Path Aliases**: `@/*` maps to `src/*` for clean imports
 - **Theme-aware classes**: Always use semantic color classes (e.g., `bg-card`, `text-muted-foreground`)
+- **Touch-Friendly UI**: Minimum 44-48px touch targets for all interactive elements
 
 #### Color System & Contrast Guidelines
 - **OKLCH Color Space**: All colors are defined using OKLCH for better perceptual uniformity
@@ -115,8 +118,32 @@ Defined in `src/integrations/trpc/router.ts` with meeting-related procedures:
 - GitHub Actions linting with `@tktco/node-actionlint`
 - React DevTools are available in development but Query DevTools have been removed
 
+### UI/UX Design Principles
+
+#### Mobile-First Approach
+- **Progressive Enhancement**: Start with mobile layout, enhance for larger screens with `sm:` and `lg:` breakpoints
+- **Touch-First Interactions**: All buttons and interactive elements sized for finger taps (min 44-48px)
+- **Vertical Layout Priority**: Use `flex-col` on mobile, `sm:flex-row` for desktop when needed
+- **Responsive Typography**: `text-lg sm:text-xl` pattern for scalable font sizes
+- **Adaptive Spacing**: `p-4 sm:p-6` and `mb-4 sm:mb-6` for mobile-optimized spacing
+
+#### Component Guidelines
+- **Forms**: Vertical-first layout with larger input fields (`px-4 py-3`) and proper labels
+- **Buttons**: Consistent sizing with icons (18px) and adequate padding for touch
+- **Cards**: Responsive padding and typography that works on all screen sizes
+- **Tables**: Use collapsible `<details>` for detailed views, prioritize card-based layouts
+- **Edit States**: Responsive inline editing with mobile-friendly controls
+
+#### User Experience Features
+- **Sample Data**: App starts with pre-populated Japanese sample agenda items for immediate usability
+- **Inline Editing**: Direct editing of agenda items with touch-friendly save/cancel controls
+- **Visual Feedback**: Clear active states, progress indicators, and status visibility
+- **Efficient Navigation**: Streamlined interface focusing on core meeting tracking functionality
+
 ### Important Reminders
 - Always use theme-aware CSS classes instead of hard-coded colors
 - Always use the translation function `t()` for all user-facing text
+- Follow mobile-first responsive design patterns with appropriate breakpoints
+- Ensure all interactive elements meet touch accessibility standards (44-48px minimum)
 - Run `bun run lint` before committing to ensure code quality
 - The route tree (`routeTree.gen.ts`) is auto-generated - never edit it manually
