@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Plus, Play, Pause, RotateCcw, History, BarChart3, Timer, ListChecks } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -6,7 +6,7 @@ import { EmptyState } from '../components/EmptyState'
 import { MeetingTimer } from '../components/MeetingTimer'
 import { MeetingProgress } from '../components/MeetingProgress'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/tracker')({
 	component: MeetingTimeTracker,
 })
 
@@ -181,13 +181,6 @@ function MeetingTimeTracker() {
 
 	const totalEstimated = agendaItems.reduce((sum, item) => sum + item.estimatedMinutes, 0)
 	const totalActual = agendaItems.reduce((sum, item) => sum + (item.actualMinutes || 0), 0)
-
-	const getTimeDifference = (estimated: number, actual: number): string => {
-		const diff = actual - estimated
-		const sign = diff >= 0 ? '+' : ''
-		return `${sign}${formatTime(Math.abs(diff))}`
-	}
-
 	const completedItems = agendaItems.filter(item => item.actualMinutes)
 	const allItemsComplete = agendaItems.length > 0 && agendaItems.every(item => item.actualMinutes)
 
@@ -204,7 +197,6 @@ function MeetingTimeTracker() {
 		if (item.actualMinutes) return sum + item.actualMinutes * 60000
 		return sum + getCurrentElapsed(item)
 	}, 0)
-
 
 	return (
 		<div className="min-h-screen bg-background p-6">
@@ -314,15 +306,6 @@ function MeetingTimeTracker() {
 										<History size={16} />
 										{t('button.saveMeeting')}
 									</button>
-								)}
-								{completedItems.length > 0 && (
-									<Link
-										to="/retrospective"
-										className="px-4 py-2 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2"
-									>
-										<BarChart3 size={16} />
-										{t('button.retrospective')}
-									</Link>
 								)}
 							</div>
 						</div>

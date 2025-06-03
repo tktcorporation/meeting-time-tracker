@@ -1,17 +1,43 @@
-import { Link } from '@tanstack/react-router'
-import { Moon, Sun, Languages } from 'lucide-react'
+import { Link, useRouterState } from '@tanstack/react-router'
+import { Moon, Sun, Languages, Timer, BarChart3 } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
 export default function Header() {
 	const { theme, toggleTheme } = useTheme()
 	const { language, setLanguage, t } = useLanguage()
+	const router = useRouterState()
+	const currentPath = router.location.pathname
 
 	return (
 		<header className="p-2 flex gap-2 bg-background text-foreground border-b border-border justify-between">
-			<nav className="flex flex-row">
-				<div className="px-2 font-bold">
-					<Link to="/">{t('nav.home')}</Link>
+			<nav className="flex flex-row items-center gap-4">
+				<div className="px-2 font-bold text-lg">
+					{t('meeting.title')}
+				</div>
+				<div className="flex gap-1">
+					<Link
+						to="/"
+						className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+							currentPath === '/' 
+								? 'bg-primary text-primary-foreground' 
+								: 'hover:bg-accent hover:text-accent-foreground'
+						}`}
+					>
+						<Timer size={16} />
+						{t('nav.tracker')}
+					</Link>
+					<Link
+						to="/retrospective"
+						className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+							currentPath === '/retrospective' 
+								? 'bg-primary text-primary-foreground' 
+								: 'hover:bg-accent hover:text-accent-foreground'
+						}`}
+					>
+						<BarChart3 size={16} />
+						{t('nav.retrospective')}
+					</Link>
 				</div>
 			</nav>
 

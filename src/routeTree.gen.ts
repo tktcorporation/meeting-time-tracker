@@ -11,9 +11,23 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TrackerImport } from './routes/tracker'
+import { Route as RetrospectiveImport } from './routes/retrospective'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const TrackerRoute = TrackerImport.update({
+  id: '/tracker',
+  path: '/tracker',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RetrospectiveRoute = RetrospectiveImport.update({
+  id: '/retrospective',
+  path: '/retrospective',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -32,6 +46,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/retrospective': {
+      id: '/retrospective'
+      path: '/retrospective'
+      fullPath: '/retrospective'
+      preLoaderRoute: typeof RetrospectiveImport
+      parentRoute: typeof rootRoute
+    }
+    '/tracker': {
+      id: '/tracker'
+      path: '/tracker'
+      fullPath: '/tracker'
+      preLoaderRoute: typeof TrackerImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/retrospective': typeof RetrospectiveRoute
+  '/tracker': typeof TrackerRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/retrospective': typeof RetrospectiveRoute
+  '/tracker': typeof TrackerRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/retrospective': typeof RetrospectiveRoute
+  '/tracker': typeof TrackerRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/retrospective' | '/tracker'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/retrospective' | '/tracker'
+  id: '__root__' | '/' | '/retrospective' | '/tracker'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  RetrospectiveRoute: typeof RetrospectiveRoute
+  TrackerRoute: typeof TrackerRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  RetrospectiveRoute: RetrospectiveRoute,
+  TrackerRoute: TrackerRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +115,19 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/retrospective",
+        "/tracker"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/retrospective": {
+      "filePath": "retrospective.tsx"
+    },
+    "/tracker": {
+      "filePath": "tracker.tsx"
     }
   }
 }

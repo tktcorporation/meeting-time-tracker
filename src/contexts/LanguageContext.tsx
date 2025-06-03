@@ -53,12 +53,17 @@ const translations: Record<Language, Translations> = {
 		'retrospective.totalActual': 'Total Actual',
 		'retrospective.overallDifference': 'Overall Difference',
 		'nav.home': 'Home',
+		'nav.tracker': 'Tracker',
+		'nav.retrospective': 'Retrospective',
 		'nav.toggleLanguage': 'Toggle Language',
 		'nav.toggleTheme': 'Toggle Theme',
 		'onboarding.step1': 'Add Topics',
 		'onboarding.step2': 'Track Time',
 		'onboarding.step3': 'Review Results',
-		'onboarding.tryDemo': 'Try Demo Meeting'
+		'onboarding.tryDemo': 'Try Demo Meeting',
+		'retrospective.noData': 'No Meeting Data',
+		'retrospective.noDataDescription': 'You haven\'t completed any meetings yet. Start tracking a meeting to view retrospective analysis.',
+		'retrospective.startFirstMeeting': 'Start Your First Meeting'
 	},
 	ja: {
 		'meeting.title': '会議時間トラッカー',
@@ -100,12 +105,17 @@ const translations: Record<Language, Translations> = {
 		'retrospective.totalActual': '合計実際時間',
 		'retrospective.overallDifference': '全体差分',
 		'nav.home': 'ホーム',
+		'nav.tracker': 'トラッカー',
+		'nav.retrospective': '振り返り',
 		'nav.toggleLanguage': '言語切替',
 		'nav.toggleTheme': 'テーマ切替',
 		'onboarding.step1': 'トピック追加',
 		'onboarding.step2': '時間計測',
 		'onboarding.step3': '結果確認',
-		'onboarding.tryDemo': 'デモ会議を試す'
+		'onboarding.tryDemo': 'デモ会議を試す',
+		'retrospective.noData': '会議データなし',
+		'retrospective.noDataDescription': 'まだ会議を完了していません。会議の振り返り分析を表示するには、会議のトラッキングを開始してください。',
+		'retrospective.startFirstMeeting': '最初の会議を開始'
 	}
 }
 
