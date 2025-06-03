@@ -232,12 +232,12 @@ function MeetingTimeTracker() {
 													{formatTime(item.actualMinutes ?? 0)}
 												</td>
 												<td className={`text-center py-3 px-4 border-b border-border font-semibold ${
-													difference > 0 ? 'text-destructive' : difference < 0 ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'
+													difference > 0 ? 'text-destructive' : difference < 0 ? 'text-green-600 dark:text-green-500' : 'text-muted-foreground'
 												}`}>
 													{getTimeDifference(item.estimatedMinutes, item.actualMinutes ?? 0)}
 												</td>
 												<td className={`text-center py-3 px-4 border-b border-border font-semibold ${
-													accuracy >= 80 ? 'text-green-600 dark:text-green-400' : accuracy >= 60 ? 'text-yellow-600 dark:text-yellow-400' : 'text-destructive'
+													accuracy >= 80 ? 'text-green-600 dark:text-green-500' : accuracy >= 60 ? 'text-yellow-600 dark:text-yellow-500' : 'text-destructive'
 												}`}>
 													{accuracy}%
 												</td>
@@ -254,19 +254,19 @@ function MeetingTimeTracker() {
 								<p className="text-2xl font-bold text-primary">{formatTime(totalEstimated)}</p>
 							</div>
 							<div className="bg-green-500/10 p-4 rounded-lg">
-								<h3 className="font-semibold text-green-700 dark:text-green-400">{t('retrospective.totalActual')}</h3>
-								<p className="text-2xl font-bold text-green-600 dark:text-green-400">{formatTime(totalActual)}</p>
+								<h3 className="font-semibold text-green-700 dark:text-green-500">{t('retrospective.totalActual')}</h3>
+								<p className="text-2xl font-bold text-green-600 dark:text-green-500">{formatTime(totalActual)}</p>
 							</div>
 							<div className={`p-4 rounded-lg ${
 								totalActual > totalEstimated ? 'bg-destructive/10' : 'bg-green-500/10'
 							}`}>
 								<h3 className={`font-semibold ${
-									totalActual > totalEstimated ? 'text-destructive' : 'text-green-700 dark:text-green-400'
+									totalActual > totalEstimated ? 'text-destructive' : 'text-green-700 dark:text-green-500'
 								}`}>
 									{t('retrospective.overallDifference')}
 								</h3>
 								<p className={`text-2xl font-bold ${
-									totalActual > totalEstimated ? 'text-destructive' : 'text-green-600 dark:text-green-400'
+									totalActual > totalEstimated ? 'text-destructive' : 'text-green-600 dark:text-green-500'
 								}`}>
 									{getTimeDifference(totalEstimated, totalActual)}
 								</p>
@@ -335,7 +335,7 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={startMeeting}
-										className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors flex items-center gap-2"
+										className="px-4 py-2 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2"
 									>
 										<Play size={16} />
 										{t('button.startMeeting')}
@@ -344,7 +344,7 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={pauseMeeting}
-										className="px-4 py-2 bg-yellow-600 dark:bg-yellow-500 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-600 transition-colors flex items-center gap-2"
+										className="px-4 py-2 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2"
 									>
 										<Pause size={16} />
 										{t('button.pause')}
@@ -362,7 +362,7 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={saveMeeting}
-										className="px-4 py-2 bg-purple-600 dark:bg-purple-500 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors flex items-center gap-2"
+										className="px-4 py-2 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2"
 									>
 										<History size={16} />
 										{t('button.saveMeeting')}
@@ -372,7 +372,7 @@ function MeetingTimeTracker() {
 									<button
 										type="button"
 										onClick={() => setShowRetrospective(true)}
-										className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors flex items-center gap-2"
+										className="px-4 py-2 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2"
 									>
 										<BarChart3 size={16} />
 										{t('button.retrospective')}
@@ -420,7 +420,7 @@ function MeetingTimeTracker() {
 												</td>
 												<td className="text-center py-3 px-4 border-b border-border">
 													{item.actualMinutes ? (
-														<span className="text-green-600 dark:text-green-400 font-semibold">{t('status.complete')}</span>
+														<span className="text-green-600 dark:text-green-500 font-semibold">{t('status.complete')}</span>
 													) : item.isActive ? (
 														<span className={`font-semibold ${
 															isOvertime ? 'text-destructive' : 'text-primary'
@@ -436,7 +436,7 @@ function MeetingTimeTracker() {
 														<button
 															type="button"
 															onClick={completeCurrentItem}
-															className="px-3 py-1 bg-green-600 dark:bg-green-500 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+															className="px-3 py-1 bg-green-600 dark:bg-green-600 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-700 transition-colors"
 														>
 															{t('button.complete')}
 														</button>
