@@ -8,7 +8,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Header } from "../components/Header";
 import { MeetingProgress } from "../components/MeetingProgress";
 import { MeetingTimer } from "../components/MeetingTimer";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -254,7 +253,6 @@ function MeetingTimeTracker() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <main className="max-w-6xl mx-auto p-4 sm:p-6 pb-20">
         {/* Unified Agenda Management and Progress */}
         <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
