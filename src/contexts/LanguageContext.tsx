@@ -52,7 +52,9 @@ const translations: Record<Language, Translations> = {
 		'retrospective.totalEstimated': 'Total Estimated',
 		'retrospective.totalActual': 'Total Actual',
 		'retrospective.overallDifference': 'Overall Difference',
-		'nav.home': 'Home'
+		'nav.home': 'Home',
+		'nav.toggleLanguage': 'Toggle Language',
+		'nav.toggleTheme': 'Toggle Theme'
 	},
 	ja: {
 		'meeting.title': '会議時間トラッカー',
@@ -93,7 +95,9 @@ const translations: Record<Language, Translations> = {
 		'retrospective.totalEstimated': '合計予定時間',
 		'retrospective.totalActual': '合計実際時間',
 		'retrospective.overallDifference': '全体差分',
-		'nav.home': 'ホーム'
+		'nav.home': 'ホーム',
+		'nav.toggleLanguage': '言語切替',
+		'nav.toggleTheme': 'テーマ切替'
 	}
 }
 

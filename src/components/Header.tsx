@@ -20,7 +20,7 @@ export default function Header() {
 					type="button"
 					onClick={() => setLanguage(language === 'en' ? 'ja' : 'en')}
 					className="p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-					title="Toggle Language"
+					title={t('nav.toggleLanguage')}
 				>
 					<Languages size={18} />
 					<span className="ml-1 text-sm">{language === 'en' ? 'EN' : 'JP'}</span>
@@ -30,7 +30,7 @@ export default function Header() {
 					type="button"
 					onClick={toggleTheme}
 					className="p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-					title="Toggle Theme"
+					title={t('nav.toggleTheme')}
 				>
 					{theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
 				</button>

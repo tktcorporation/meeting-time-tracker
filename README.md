@@ -1,384 +1,159 @@
-Welcome to your new TanStack app!
+# Meeting Time Tracker
 
-$ bun create vite
-│
-◇  Project name:
-│  meeting-time-tracker
-│
-◇  Select a framework:
-│  React
-│
-◇  Select a variant:
-│  TanStack Router ↗
-┌  Let's configure your TanStack application
-│
-◇  Select the router type:
-│  File Router - File-based routing structure
-│
-◇  Would you like to use Tailwind CSS?
-│  Yes
-│
-◇  Select toolchain
-│  Biome
-│
-◇  What add-ons would you like for your project?
-│  Netlify, Shadcn, T3Env, tRPC, Query
-│
-◇  Would you like any examples?
-│  none
-│
-◇  Initialized git repository
-│
-◇  Installed dependencies
-│
-▲  Warnings: 
-│  TanStack Start is not yet at 1.0 and may change significantly or not be compatible with other add-ons.
-│  Migrating to Start might require deleting node_modules and re-installing.
-│
-└  Your TanStack app is ready in 'meeting-time-tracker'.
+A real-time meeting progress tracking application built with modern web technologies. Track your meeting time, visualize progress, and generate retrospectives to improve future meetings.
 
-Use the following commands to start your app:
-% cd meeting-time-tracker
-% bunx --bun run dev
+![Meeting Time Tracker](https://img.shields.io/badge/TanStack-Start-ff4154?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square)
+![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?style=flat-square)
 
-Please read the README.md for information on testing, styling, adding routes, etc.
+## Features
 
-# Getting Started
+- 📊 **Real-time Progress Tracking** - Visual progress bars show meeting time usage
+- 🌍 **Multi-language Support** - Switch between English and Japanese
+- 🌓 **Dark/Light Theme** - Comfortable viewing in any lighting condition
+- 📝 **Meeting History** - Track past meetings and their outcomes
+- 🔄 **Live Updates** - See elapsed time update in real-time
+- 📈 **Retrospectives** - Generate insights from completed meetings
 
-To run this application:
+## Getting Started
 
+### Prerequisites
+
+- [Bun](https://bun.sh/) (recommended) or Node.js 18+
+- Git
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/meeting-time-tracker.git
+cd meeting-time-tracker
+```
+
+2. Install dependencies:
 ```bash
 bun install
-bunx --bun run start  
 ```
 
-# Building For Production
+3. Start the development server:
+```bash
+bun run dev
+```
 
-To build this application for production:
+The application will be available at `http://localhost:3000`.
+
+## Usage
+
+### Creating a Meeting
+
+1. Enter the meeting title
+2. Set the duration (in minutes)
+3. Add participant names (comma-separated)
+4. Click "Start Meeting" to begin tracking
+
+### During the Meeting
+
+- The progress bar shows time usage in real-time
+- Color indicators:
+  - 🟩 Green: Under 50% time used
+  - 🟨 Yellow: 50-80% time used
+  - 🟧 Orange: 80-90% time used
+  - 🟥 Red: Over 90% time used
+- Use pause/resume buttons to control the timer
+- Click "End Meeting" when finished
+
+### Meeting History
+
+- View all past meetings in the history section
+- See duration, participants, and efficiency metrics
+- Access retrospectives for completed meetings
+
+### Customization
+
+- **Theme**: Click the sun/moon icon to toggle dark mode
+- **Language**: Click the language icon to switch between EN/JP
+
+## Building for Production
+
+To create an optimized production build:
 
 ```bash
-bunx --bun run build
+bun run build
 ```
 
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+To preview the production build locally:
 
 ```bash
-bunx --bun run test
+bun run start
 ```
 
-## Styling
+## Development
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-
-## Linting & Formatting
-
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
-
+### Available Scripts
 
 ```bash
-bunx --bun run lint
-bunx --bun run format
-bunx --bun run check
+bun run dev        # Start development server
+bun run build      # Build for production
+bun run start      # Start production server
+bun run test       # Run tests with Vitest
+bun run lint       # Check code quality
+bun run format     # Format code
+bun run check      # Run all checks
 ```
 
+### Project Structure
 
-## Setting up Netlify
-
-First install the Netlify CLI with:
-
-```bash
-npm install -g netlify-cli`
+```
+meeting-time-tracker/
+├── src/
+│   ├── routes/          # File-based routing
+│   ├── components/      # React components
+│   ├── contexts/        # Theme & language contexts
+│   ├── integrations/    # tRPC & TanStack Query setup
+│   └── styles.css       # Global styles & Tailwind
+├── public/              # Static assets
+└── app.config.ts        # App configuration
 ```
 
-```bash
-netlify init
-```
+### Tech Stack
 
+- **Framework**: [TanStack Start](https://tanstack.com/start) - Full-stack React framework
+- **Routing**: [TanStack Router](https://tanstack.com/router) - Type-safe file-based routing
+- **API**: [tRPC](https://trpc.io/) - End-to-end type-safe APIs
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **State**: [TanStack Query](https://tanstack.com/query) - Server state management
+- **Language**: TypeScript with strict mode
+- **Runtime**: [Bun](https://bun.sh/) - Fast JavaScript runtime
 
-## Shadcn
+## Contributing
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+Contributions are welcome! Please follow these steps:
 
-```bash
-pnpx shadcn@latest add button
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
+### Code Style
 
-## T3Env
+- Use tab indentation
+- Use double quotes for strings
+- Run `bun run lint` before committing
+- All text must use the translation function
+- All colors must use theme-aware CSS variables
 
-- You can use T3Env to add type safety to your environment variables.
-- Add Environment variables to the `src/env.mjs` file.
-- Use the environment variables in your code.
+## License
 
-### Usage
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-```ts
-import { env } from "@/env";
+## Acknowledgments
 
-console.log(env.VITE_APP_TITLE);
-```
+- Built with [TanStack](https://tanstack.com/) libraries
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
 
+---
 
-
-
-
-
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-bun install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-bun install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+Made with ❤️ using TanStack Start and Bun
