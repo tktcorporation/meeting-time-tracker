@@ -15,8 +15,10 @@ This is a **mobile-first** meeting time tracking application that helps monitor 
 
 **Development server:**
 ```bash
-bun run dev              # Start development server with Vinxi
+bun run dev              # Start development server with Vinxi (blocks terminal process)
 ```
+
+⚠️ **Warning:** `bun run dev` starts a persistent server process that will block the terminal. For quick syntax/build validation, use `bun run build` instead.
 
 **Build and serve:**
 ```bash
@@ -37,6 +39,8 @@ bun run lint:fix         # Auto-fix linting issues
 bun run format           # Format code with Biome
 bun run check            # Run comprehensive Biome check
 ```
+
+**Important:** Always run `bun run lint:fix` before starting the development server with `bun run dev` to ensure code quality and prevent syntax errors.
 
 ## Architecture Overview
 
