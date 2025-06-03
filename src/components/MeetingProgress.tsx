@@ -104,6 +104,28 @@ export function MeetingProgress({ items, onItemClick }: MeetingProgressProps) {
 					)
 				})}
 			</div>
+			{/* Total time summary */}
+			<div className="mt-6 p-4 bg-muted rounded-lg">
+				<div className="flex justify-between items-center">
+					<span className="font-medium">Total Time:</span>
+					<div className="flex gap-4 text-sm">
+						<span className="text-muted-foreground">
+							Estimated: {totalEstimated} min
+						</span>
+						<span className="text-muted-foreground">
+							Actual: {Math.round(totalCompleted * 10) / 10} min
+						</span>
+						{totalCompleted > 0 && (
+							<span className={`font-medium ${
+								totalCompleted > totalEstimated ? 'text-destructive' : 'text-green-600 dark:text-green-500'
+							}`}>
+								{totalCompleted > totalEstimated ? '+' : '-'}
+								{Math.abs(Math.round((totalCompleted - totalEstimated) * 10) / 10)} min
+							</span>
+						)}
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }
