@@ -34,8 +34,9 @@ bun run test             # Run tests with Vitest
 
 **Linting and formatting:**
 ```bash
-bun run lint             # Run Biome linter + GitHub Actions linter
+bun run lint             # Run Biome linter + GitHub Actions linter + Knip
 bun run lint:fix         # Auto-fix linting issues
+bun run lint:knip        # Check for unused exports/imports with Knip
 bun run format           # Format code with Biome
 bun run check            # Run comprehensive Biome check
 ```
