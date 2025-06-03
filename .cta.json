@@ -3,7 +3,7 @@
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,
-  "packageManager": "pnpm",
+  "packageManager": "bun",
   "git": true,
   "version": 1,
   "framework": "react-cra",
@@ -14,8 +14,6 @@
     "t3env",
     "tRPC",
     "tanstack-query",
-    "tanchat",
-    "start",
-    "store"
+    "start"
   ]
 }

@@ -5,6 +5,3 @@ dist-ssr
 *.local
 .output
 .vinxi
-
-# pnpm
-.pnpm-store
