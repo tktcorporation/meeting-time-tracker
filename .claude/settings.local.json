@@ -19,7 +19,10 @@
       "Bash(tr:*)",
       "WebFetch",
       "Bash(bun add:*)",
-      "Bash(biome check:*)"
+      "Bash(biome check:*)",
+      "Bash(bun test:*)",
+      "Bash(bun list:*)",
+      "Bash(npx vitest run:*)"
     ],
     "deny": []
   }
