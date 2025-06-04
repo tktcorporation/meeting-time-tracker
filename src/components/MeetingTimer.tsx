@@ -4,6 +4,7 @@ interface MeetingTimerProps {
   totalElapsed: number;
   totalEstimated: number;
   isRunning: boolean;
+  startTime?: number;
 }
 
 /**
@@ -12,19 +13,25 @@ interface MeetingTimerProps {
  * Displays remaining time by subtracting elapsed time from estimated total.
  * Shows timer in countdown format with visual indicators for running state.
  * Changes appearance when time is exceeded.
+ * Also displays start time and estimated end time for reference.
  *
  * @param totalElapsed - Total elapsed time in milliseconds
  * @param totalEstimated - Total estimated time in minutes
  * @param isRunning - Whether the timer is currently running
+ * @param startTime - Meeting start timestamp in milliseconds (optional)
  */
 export function MeetingTimer({
   totalElapsed,
   totalEstimated,
   isRunning,
+  startTime,
 }: MeetingTimerProps) {
   const totalEstimatedMs = totalEstimated * 60000; // Convert minutes to milliseconds
   const remainingMs = Math.max(0, totalEstimatedMs - totalElapsed);
   const isOvertime = totalElapsed > totalEstimatedMs;
+
+  // Calculate progress percentage (capped at 100% for overtime)
+  const progressPercentage = Math.min(100, (totalElapsed / totalEstimatedMs) * 100);
 
   // For overtime, show elapsed time beyond estimate
   const displayMs = isOvertime ? totalElapsed - totalEstimatedMs : remainingMs;
@@ -32,6 +39,16 @@ export function MeetingTimer({
   const hours = Math.floor(displayMs / 3600000);
   const minutes = Math.floor((displayMs % 3600000) / 60000);
   const seconds = Math.floor((displayMs % 60000) / 1000);
+
+  // Format time display helper
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Calculate start and end times
+  const meetingStartTime = startTime || Date.now() - totalElapsed;
+  const estimatedEndTime = meetingStartTime + totalEstimatedMs;
 
   return (
     <div className="relative">
@@ -88,6 +105,36 @@ export function MeetingTimer({
           >
             {seconds.toString().padStart(2, "0")}
           </span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="mt-6 mb-4">
+          <div className="flex justify-between text-sm text-muted-foreground mb-2">
+            <span>Progress</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all duration-300 ${
+                isOvertime ? "bg-destructive" : "bg-primary"
+              }`}
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Meeting times */}
+        <div className="mt-4 flex justify-between text-sm text-muted-foreground border-t pt-4">
+          <div className="text-left">
+            <div className="font-medium">Start</div>
+            <div>{formatTime(meetingStartTime)}</div>
+          </div>
+          <div className="text-right">
+            <div className="font-medium">Est. End</div>
+            <div className={isOvertime ? "text-destructive" : ""}>
+              {formatTime(estimatedEndTime)}
+            </div>
+          </div>
         </div>
 
         {/* Status indicator */}
