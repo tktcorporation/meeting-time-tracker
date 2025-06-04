@@ -1,5 +1,7 @@
 import {
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   Circle,
   Edit,
   GripVertical,
@@ -43,10 +45,22 @@ interface MeetingProgressProps {
  * It handles empty state display, item creation, editing, deletion, and real-time progress visualization.
  * Integrates all agenda-related functionality into a single, cohesive interface.
  *
+ * ITEM CONTROL POLICIES:
+ * - EDITING: Always allowed for all items (even completed ones)
+ * - DELETION: Only allowed for items with no elapsed time (isActive=false, elapsedTime=0, actualMinutes=undefined)
+ * - REORDERING: Allowed for all items except currently active ones
+ * - CREATION: Always allowed, even during active meetings
+ *
+ * DATA INTEGRITY PHILOSOPHY:
+ * - Once an agenda item has timing data, it becomes part of the meeting record
+ * - Deletion restrictions protect against accidental data loss
+ * - Editing flexibility allows correction of names and time estimates
+ * - Reordering flexibility supports dynamic meeting flow adjustments
+ *
  * @param items - Array of agenda items with tracking data
  * @param onItemClick - Callback when timeline circle is clicked (completes active items)
  * @param onItemEdit - Callback to update an existing agenda item
- * @param onItemDelete - Callback to remove an agenda item
+ * @param onItemDelete - Callback to remove an agenda item (subject to deletion policy)
  * @param onItemAdd - Callback to create a new agenda item
  * @param onItemReorder - Callback to reorder agenda items by drag and drop
  * @param onAddSample - Callback to populate with sample data
@@ -72,6 +86,8 @@ export function MeetingProgress({
   const [newItemName, setNewItemName] = useState("");
   const [newItemTime, setNewItemTime] = useState(5);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchStartIndex, setTouchStartIndex] = useState<number | null>(null);
 
   const totalEstimated = items.reduce(
     (sum, item) => sum + item.estimatedMinutes,
@@ -197,6 +213,95 @@ export function MeetingProgress({
     setDraggedIndex(null);
   };
 
+  /**
+   * Handles touch start event for mobile drag and drop.
+   * Records the initial touch position and item index.
+   * 
+   * @param e - Touch event object
+   * @param index - Zero-based index of the item being touched
+   */
+  const handleTouchStart = (e: React.TouchEvent, index: number) => {
+    if (!onItemReorder || items[index].isActive) return;
+    
+    setTouchStartY(e.touches[0].clientY);
+    setTouchStartIndex(index);
+    setDraggedIndex(index);
+  };
+
+  /**
+   * Handles touch move event for mobile drag and drop.
+   * Calculates the drop target based on touch position.
+   * 
+   * @param e - Touch event object
+   */
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY === null || touchStartIndex === null) return;
+    
+    e.preventDefault(); // Prevent scrolling
+    
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - touchStartY;
+    
+    // Calculate which item we're hovering over
+    const itemHeight = 80; // Approximate height of each timeline item
+    const indexChange = Math.round(deltaY / itemHeight);
+    const newIndex = Math.max(0, Math.min(items.length - 1, touchStartIndex + indexChange));
+    
+    // Visual feedback could be added here
+  };
+
+  /**
+   * Handles touch end event for mobile drag and drop.
+   * Completes the reorder operation if position changed significantly.
+   * 
+   * @param e - Touch event object
+   */
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY === null || touchStartIndex === null) return;
+    
+    const currentY = e.changedTouches[0].clientY;
+    const deltaY = currentY - touchStartY;
+    
+    // Calculate target index based on movement
+    const itemHeight = 80;
+    const indexChange = Math.round(deltaY / itemHeight);
+    const newIndex = Math.max(0, Math.min(items.length - 1, touchStartIndex + indexChange));
+    
+    // Only reorder if position changed and callback exists
+    if (newIndex !== touchStartIndex && onItemReorder) {
+      onItemReorder(touchStartIndex, newIndex);
+    }
+    
+    // Reset touch state
+    setTouchStartY(null);
+    setTouchStartIndex(null);
+    setDraggedIndex(null);
+  };
+
+  /**
+   * Moves an item up in the list order.
+   * Provides alternative to drag and drop for better mobile accessibility.
+   * 
+   * @param index - Zero-based index of the item to move up
+   */
+  const moveItemUp = (index: number) => {
+    if (index > 0 && onItemReorder) {
+      onItemReorder(index, index - 1);
+    }
+  };
+
+  /**
+   * Moves an item down in the list order.
+   * Provides alternative to drag and drop for better mobile accessibility.
+   * 
+   * @param index - Zero-based index of the item to move down
+   */
+  const moveItemDown = (index: number) => {
+    if (index < items.length - 1 && onItemReorder) {
+      onItemReorder(index, index + 1);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Empty state when no items */}
@@ -286,7 +391,7 @@ export function MeetingProgress({
           return (
             <div 
               key={item.id} 
-              className={`flex items-start gap-4 group relative transition-all duration-200 ${
+              className={`flex items-start gap-2 group relative transition-all duration-200 ${
                 isDragging ? 'opacity-50 scale-95' : ''
               }`}
               draggable={onItemReorder && !item.isActive}
@@ -294,11 +399,55 @@ export function MeetingProgress({
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, index)}
               onDragEnd={handleDragEnd}
+              onTouchStart={(e) => handleTouchStart(e, index)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
-              {/* Drag handle */}
+              {/* 
+                Agenda item reordering controls:
+                
+                REORDERING IS RESTRICTED for active items only:
+                - !item.isActive condition prevents reordering of currently running agenda
+                - Items with elapsed time or completed items CAN be reordered
+                
+                RATIONALE for allowing reordering of started/completed items:
+                - Meeting flow may require adjusting agenda order even after items have begun
+                - Completed items might need to be moved to better reflect actual meeting flow
+                - Only prevents reordering the currently active item to avoid timing confusion
+                
+                RESPONSIVE DESIGN:
+                - Mobile (sm:hidden): Up/down arrow buttons for touch-friendly interaction
+                - Desktop (hidden sm:flex): Drag handle for mouse-based drag & drop
+              */}
+              
+              {/* Mobile reorder buttons (shown on small screens) */}
+              {onItemReorder && !item.isActive && (
+                <div className="flex flex-col gap-1 sm:hidden">
+                  <button
+                    type="button"
+                    onClick={() => moveItemUp(index)}
+                    disabled={index === 0}
+                    className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Move up"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveItemDown(index)}
+                    disabled={index === items.length - 1}
+                    className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    title="Move down"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Desktop drag handle (shown on larger screens) */}
               {onItemReorder && !item.isActive && (
                 <div 
-                  className="flex items-center cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+                  className="hidden sm:flex items-center cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
                   title="Drag to reorder"
                 >
                   <GripVertical className="w-4 h-4" />
@@ -387,6 +536,7 @@ export function MeetingProgress({
                       </h4>
                       {onItemEdit && onItemDelete && (
                         <div className="flex gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                          {/* Edit button - always available for all agenda items */}
                           <button
                             type="button"
                             onClick={() => startEdit(index)}
@@ -395,12 +545,42 @@ export function MeetingProgress({
                           >
                             <Edit className="w-4 h-4" />
                           </button>
+                          
+                          {/* 
+                            Delete button with strict deletion policy:
+                            
+                            DELETION IS RESTRICTED when ANY of these conditions are met:
+                            1. item.isActive - Currently running agenda item cannot be deleted
+                            2. item.elapsedTime > 0 - Any time spent on this item, even if paused
+                            3. item.actualMinutes exists - Completed items with recorded actual time
+                            
+                            RATIONALE:
+                            - Protects meeting history and data integrity
+                            - Prevents accidental loss of timing data
+                            - Ensures completed or started agenda items remain in records
+                            - Only allows deletion of completely untouched agenda items
+                            
+                            VISUAL FEEDBACK:
+                            - Disabled state: grayed out with cursor-not-allowed
+                            - Enabled state: normal hover effects with destructive coloring
+                            
+                            Note: Editing is always allowed even for items with elapsed time,
+                            allowing users to correct names or adjust estimated times.
+                          */}
                           <button
                             type="button"
                             onClick={() => onItemDelete(index)}
-                            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
-                            title="Delete item"
-                            disabled={item.isActive}
+                            className={`p-2 rounded transition-colors ${
+                              item.isActive || item.elapsedTime > 0 || item.actualMinutes
+                                ? "text-muted-foreground/50 cursor-not-allowed"
+                                : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            }`}
+                            title={
+                              item.isActive || item.elapsedTime > 0 || item.actualMinutes
+                                ? "Cannot delete agenda item with elapsed time"
+                                : "Delete item"
+                            }
+                            disabled={item.isActive || item.elapsedTime > 0 || item.actualMinutes !== undefined}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
