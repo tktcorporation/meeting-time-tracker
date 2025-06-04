@@ -1,10 +1,21 @@
 import { Clock } from "lucide-react";
 
+interface AgendaItem {
+  id: string;
+  name: string;
+  estimatedMinutes: number;
+  actualMinutes?: number;
+  isActive: boolean;
+  startTime?: number;
+  elapsedTime: number;
+}
+
 interface MeetingTimerProps {
   totalElapsed: number;
   totalEstimated: number;
   isRunning: boolean;
   startTime?: number;
+  agendaItems?: AgendaItem[];
 }
 
 /**
@@ -14,17 +25,20 @@ interface MeetingTimerProps {
  * Shows timer in countdown format with visual indicators for running state.
  * Changes appearance when time is exceeded.
  * Also displays start time and estimated end time for reference.
+ * Adjusts estimated end time based on agenda progress (ahead/behind schedule).
  *
  * @param totalElapsed - Total elapsed time in milliseconds
  * @param totalEstimated - Total estimated time in minutes
  * @param isRunning - Whether the timer is currently running
  * @param startTime - Meeting start timestamp in milliseconds (optional)
+ * @param agendaItems - Array of agenda items for progress calculation (optional)
  */
 export function MeetingTimer({
   totalElapsed,
   totalEstimated,
   isRunning,
   startTime,
+  agendaItems,
 }: MeetingTimerProps) {
   const totalEstimatedMs = totalEstimated * 60000; // Convert minutes to milliseconds
   const remainingMs = Math.max(0, totalEstimatedMs - totalElapsed);
@@ -46,9 +60,36 @@ export function MeetingTimer({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Calculate agenda progress adjustment
+  const calculateProgressAdjustment = () => {
+    if (!agendaItems || agendaItems.length === 0) return 0;
+    
+    let adjustmentMs = 0;
+    
+    for (const item of agendaItems) {
+      if (item.actualMinutes !== undefined) {
+        // Completed item: calculate difference between actual and estimated
+        const actualMs = item.actualMinutes * 60000;
+        const estimatedMs = item.estimatedMinutes * 60000;
+        adjustmentMs += (actualMs - estimatedMs);
+      } else if (item.isActive && item.startTime) {
+        // Current active item: calculate current progress vs pace
+        const currentElapsed = item.elapsedTime + (Date.now() - item.startTime);
+        const estimatedMs = item.estimatedMinutes * 60000;
+        if (currentElapsed > estimatedMs) {
+          // Currently running overtime
+          adjustmentMs += (currentElapsed - estimatedMs);
+        }
+      }
+    }
+    
+    return adjustmentMs;
+  };
+
   // Calculate start and end times
   const meetingStartTime = startTime || Date.now() - totalElapsed;
-  const estimatedEndTime = meetingStartTime + totalEstimatedMs;
+  const progressAdjustmentMs = calculateProgressAdjustment();
+  const estimatedEndTime = meetingStartTime + totalEstimatedMs + progressAdjustmentMs;
 
   return (
     <div className="relative">
@@ -130,7 +171,18 @@ export function MeetingTimer({
             <div>{formatTime(meetingStartTime)}</div>
           </div>
           <div className="text-right">
-            <div className="font-medium">Est. End</div>
+            <div className="font-medium flex items-center gap-1">
+              Est. End
+              {progressAdjustmentMs !== 0 && (
+                <span className={`text-xs px-1 py-0.5 rounded ${
+                  progressAdjustmentMs > 0 
+                    ? "bg-destructive/10 text-destructive" 
+                    : "bg-green-500/10 text-green-600 dark:text-green-500"
+                }`}>
+                  {progressAdjustmentMs > 0 ? "+" : ""}{Math.round(progressAdjustmentMs / 60000)}m
+                </span>
+              )}
+            </div>
             <div className={isOvertime ? "text-destructive" : ""}>
               {formatTime(estimatedEndTime)}
             </div>

@@ -378,6 +378,7 @@ function MeetingTimeTracker() {
               totalElapsed={totalElapsed}
               totalEstimated={totalEstimated}
               isRunning={isRunning}
+              agendaItems={agendaItems}
             />
 
             {/* Control buttons below timer */}
