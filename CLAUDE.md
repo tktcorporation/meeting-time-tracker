@@ -31,6 +31,9 @@ bun run serve            # Preview build with Vite
 **Testing:**
 ```bash
 bun run test             # Run tests with Vitest
+bun run test:watch       # Run tests in watch mode
+bun run test:ui          # Run tests with Vitest UI
+bun run test:coverage    # Run tests with coverage report
 ```
 
 **Linting and formatting:**
@@ -186,12 +189,71 @@ Defined in `src/integrations/trpc/router.ts` with meeting-related procedures:
 - Visibility change events ensure accurate time tracking across tab switches
 - All time calculations use `Date.now()` for consistency
 
+### Testing Framework & Conventions
+
+#### Test Setup
+- **Vitest** as the primary testing framework with jsdom environment
+- **React Testing Library** for component testing with user-event simulation
+- **Global test setup** in `src/test/setup.ts` with:
+  - Automatic cleanup after each test
+  - localStorage mock with clean state between tests
+  - window.matchMedia mock for theme testing
+  - @testing-library/jest-dom matchers
+
+#### Test File Organization
+- Test files located alongside source files with `.test.ts` or `.test.tsx` extension
+- Test coverage for:
+  - Utility functions (`src/lib/utils.test.ts`)
+  - React contexts (`src/contexts/*.test.tsx`)
+  - Key components (`src/components/*.test.tsx`)
+
+#### Testing Best Practices
+- **Mock Management**: Reset mocks in test setup, override per-test as needed
+- **State Isolation**: localStorage.clear() and DOM cleanup before each test
+- **Accessibility**: All test buttons must include `type="button"` attribute
+- **User Interactions**: Use `userEvent.setup()` for realistic user interactions
+- **Multiple Elements**: Use `getAllByText()` when multiple elements have same text
+- **Theme Testing**: Mock window.matchMedia appropriately for light/dark mode tests
+- **Translation Testing**: Test both English and Japanese language states
+- **Error Handling**: Suppress console.error with vi.spyOn() for error boundary tests
+
+#### Test Structure Pattern
+```typescript
+describe("ComponentName", () => {
+  beforeEach(() => {
+    // Component-specific setup
+  });
+
+  describe("feature group", () => {
+    it("should describe specific behavior", async () => {
+      // Arrange
+      const user = userEvent.setup();
+      
+      // Act
+      render(<Component />);
+      await user.click(screen.getByRole("button"));
+      
+      // Assert
+      expect(screen.getByText("Expected")).toBeInTheDocument();
+    });
+  });
+});
+```
+
+#### Critical Test Requirements
+- **Run `bun run test` before commits** to ensure all tests pass
+- **Test accessibility**: Verify proper ARIA attributes and button types
+- **Test persistence**: Verify localStorage operations work correctly
+- **Test themes**: Ensure components work in both light and dark modes
+- **Test languages**: Verify translations work for both EN/JA languages
+
 ### Important Reminders
 - Always use theme-aware CSS classes instead of hard-coded colors
 - Always use the translation function `t()` for all user-facing text
 - Follow mobile-first responsive design patterns with appropriate breakpoints
 - Ensure all interactive elements meet touch accessibility standards (44-48px minimum)
-- Run `bun run lint` before committing to ensure code quality
+- **Run `bun run test` and `bun run lint` before committing** to ensure code quality
 - The route tree (`routeTree.gen.ts`) is auto-generated - never edit it manually
 - **ALWAYS document functions with JSDoc docstrings** explaining purpose, role, and behavior
 - **State persistence** is critical - ensure localStorage operations are wrapped in try-catch
+- **Test coverage** is essential - write tests for all new components and utilities
