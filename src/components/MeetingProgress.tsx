@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { EmptyState } from "./EmptyState";
+import { TimeInput } from "./TimeInput";
 
 interface AgendaItem {
   id: string;
@@ -60,10 +61,10 @@ export function MeetingProgress({
   const { t } = useLanguage();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
-  const [editTime, setEditTime] = useState("");
+  const [editTime, setEditTime] = useState(5);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newItemName, setNewItemName] = useState("");
-  const [newItemTime, setNewItemTime] = useState("");
+  const [newItemTime, setNewItemTime] = useState(5);
 
   const totalEstimated = items.reduce(
     (sum, item) => sum + item.estimatedMinutes,
@@ -85,7 +86,7 @@ export function MeetingProgress({
   const startEdit = (index: number) => {
     setEditingIndex(index);
     setEditName(items[index].name);
-    setEditTime(items[index].estimatedMinutes.toString());
+    setEditTime(items[index].estimatedMinutes);
   };
 
   /**
@@ -95,10 +96,10 @@ export function MeetingProgress({
    */
   const saveEdit = () => {
     if (editingIndex !== null && editName.trim() && editTime) {
-      onItemEdit?.(editingIndex, editName.trim(), Number.parseInt(editTime));
+      onItemEdit?.(editingIndex, editName.trim(), editTime);
       setEditingIndex(null);
       setEditName("");
-      setEditTime("");
+      setEditTime(5);
     }
   };
 
@@ -109,7 +110,7 @@ export function MeetingProgress({
   const cancelEdit = () => {
     setEditingIndex(null);
     setEditName("");
-    setEditTime("");
+    setEditTime(5);
   };
 
   /**
@@ -119,7 +120,7 @@ export function MeetingProgress({
   const startAddNew = () => {
     setIsAddingNew(true);
     setNewItemName("");
-    setNewItemTime("");
+    setNewItemTime(5);
   };
 
   /**
@@ -129,10 +130,10 @@ export function MeetingProgress({
    */
   const saveNewItem = () => {
     if (newItemName.trim() && newItemTime && onItemAdd) {
-      onItemAdd(newItemName.trim(), Number.parseInt(newItemTime));
+      onItemAdd(newItemName.trim(), newItemTime);
       setIsAddingNew(false);
       setNewItemName("");
-      setNewItemTime("");
+      setNewItemTime(5);
     }
   };
 
@@ -143,7 +144,7 @@ export function MeetingProgress({
   const cancelAddNew = () => {
     setIsAddingNew(false);
     setNewItemName("");
-    setNewItemTime("");
+    setNewItemTime(5);
   };
 
   return (
@@ -188,15 +189,11 @@ export function MeetingProgress({
               placeholder={t("agenda.topicNamePlaceholder")}
             />
             <div className="flex items-center gap-2">
-              <input
-                type="number"
+              <TimeInput
                 value={newItemTime}
-                onChange={(e) => setNewItemTime(e.target.value)}
-                className="w-24 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-                placeholder={t("agenda.estimatedTimePlaceholder")}
-                min="1"
+                onChange={setNewItemTime}
+                className="flex-shrink-0"
               />
-              <span className="text-sm text-muted-foreground">min</span>
               <div className="flex gap-2 ml-auto">
                 <button
                   type="button"
@@ -204,7 +201,6 @@ export function MeetingProgress({
                   className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-1"
                 >
                   <Save className="w-4 h-4" />
-                  {t("button.add")}
                 </button>
                 <button
                   type="button"
@@ -288,14 +284,11 @@ export function MeetingProgress({
                       placeholder={t("agenda.topicNamePlaceholder")}
                     />
                     <div className="flex items-center gap-2">
-                      <input
-                        type="number"
+                      <TimeInput
                         value={editTime}
-                        onChange={(e) => setEditTime(e.target.value)}
-                        className="w-20 px-2 py-1 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground text-sm"
-                        min="1"
+                        onChange={setEditTime}
+                        className="flex-shrink-0"
                       />
-                      <span className="text-sm text-muted-foreground">min</span>
                       <div className="flex gap-1 ml-auto">
                         <button
                           type="button"

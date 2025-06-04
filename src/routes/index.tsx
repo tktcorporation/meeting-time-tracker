@@ -322,12 +322,6 @@ function MeetingTimeTracker() {
 
         {/* Agenda Management and Progress */}
         <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
-          <div className="flex items-center gap-2 mb-6">
-            <ListChecks className="w-5 h-5 text-primary" />
-            <h2 className="text-lg sm:text-xl font-semibold text-card-foreground">
-              {t("agenda.management")}
-            </h2>
-          </div>
           <MeetingProgress
             items={agendaItems}
             isTimerRunning={isRunning}
