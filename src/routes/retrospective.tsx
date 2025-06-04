@@ -1,7 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { BarChart3 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Header } from "../components/Header";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export const Route = createFileRoute("/retrospective")({
@@ -55,7 +54,6 @@ function Retrospective() {
   if (meetingHistory.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
         <main className="max-w-4xl mx-auto p-6 pb-20">
           <div className="bg-card rounded-lg shadow-lg p-8 border border-border text-center">
             <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -90,7 +88,6 @@ function Retrospective() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <main className="max-w-6xl mx-auto p-6 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Meeting History Sidebar */}
