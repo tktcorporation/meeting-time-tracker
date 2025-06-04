@@ -12,7 +12,7 @@ interface AgendaItem {
 
 interface MeetingTimerProps {
   totalElapsed: number;
-  totalEstimated: number;
+  totalEstimated: number; // Already in milliseconds from useTimeCalculations
   isRunning: boolean;
   startTime?: number;
   agendaItems?: AgendaItem[];
@@ -28,7 +28,7 @@ interface MeetingTimerProps {
  * Adjusts estimated end time based on agenda progress (ahead/behind schedule).
  *
  * @param totalElapsed - Total elapsed time in milliseconds
- * @param totalEstimated - Total estimated time in minutes
+ * @param totalEstimated - Total estimated time in milliseconds
  * @param isRunning - Whether the timer is currently running
  * @param startTime - Meeting start timestamp in milliseconds (optional)
  * @param agendaItems - Array of agenda items for progress calculation (optional)
@@ -40,7 +40,7 @@ export function MeetingTimer({
   startTime,
   agendaItems,
 }: MeetingTimerProps) {
-  const totalEstimatedMs = totalEstimated * 60000; // Convert minutes to milliseconds
+  const totalEstimatedMs = totalEstimated; // Already in milliseconds
   const remainingMs = Math.max(0, totalEstimatedMs - totalElapsed);
   const isOvertime = totalElapsed > totalEstimatedMs;
 
@@ -60,7 +60,11 @@ export function MeetingTimer({
   // Format time display helper
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // Use 24-hour format for consistency
+    });
   };
 
   // Calculate agenda progress adjustment

@@ -5,7 +5,7 @@ import { MeetingTimer } from "./MeetingTimer";
 describe("MeetingTimer", () => {
   it("should display remaining time correctly", () => {
     // 10 minutes total, 3 minutes elapsed = 7 minutes remaining
-    const totalEstimated = 10; // minutes
+    const totalEstimated = 10 * 60 * 1000; // 10 minutes in ms
     const totalElapsed = 3 * 60 * 1000; // 3 minutes in ms
 
     render(
@@ -25,7 +25,7 @@ describe("MeetingTimer", () => {
 
   it("should display overtime correctly", () => {
     // 10 minutes total, 12 minutes elapsed = 2 minutes overtime
-    const totalEstimated = 10; // minutes
+    const totalEstimated = 10 * 60 * 1000; // 10 minutes in ms
     const totalElapsed = 12 * 60 * 1000; // 12 minutes in ms
 
     render(
@@ -45,7 +45,11 @@ describe("MeetingTimer", () => {
 
   it("should display running indicator when timer is running", () => {
     render(
-      <MeetingTimer totalElapsed={0} totalEstimated={10} isRunning={true} />,
+      <MeetingTimer
+        totalElapsed={0}
+        totalEstimated={10 * 60 * 1000}
+        isRunning={true}
+      />,
     );
 
     // Should have animated pulse indicators
@@ -55,7 +59,7 @@ describe("MeetingTimer", () => {
 
   it("should handle edge case of exactly matching time", () => {
     // 10 minutes total, 10 minutes elapsed = 0 remaining
-    const totalEstimated = 10; // minutes
+    const totalEstimated = 10 * 60 * 1000; // 10 minutes in ms
     const totalElapsed = 10 * 60 * 1000; // 10 minutes in ms
 
     render(
@@ -72,7 +76,7 @@ describe("MeetingTimer", () => {
 
   it("should format time with hours correctly", () => {
     // 90 minutes total, 5 minutes elapsed = 85 minutes (1:25:00) remaining
-    const totalEstimated = 90; // minutes
+    const totalEstimated = 90 * 60 * 1000; // 90 minutes in ms
     const totalElapsed = 5 * 60 * 1000; // 5 minutes in ms
 
     render(
@@ -90,7 +94,7 @@ describe("MeetingTimer", () => {
 
   it("should show seconds correctly", () => {
     // 10 minutes total, 3 minutes 45 seconds elapsed
-    const totalEstimated = 10; // minutes
+    const totalEstimated = 10 * 60 * 1000; // 10 minutes in ms
     const totalElapsed = (3 * 60 + 45) * 1000; // 3:45 in ms
 
     render(
@@ -110,7 +114,7 @@ describe("MeetingTimer", () => {
     const { container } = render(
       <MeetingTimer
         totalElapsed={15 * 60 * 1000}
-        totalEstimated={10}
+        totalEstimated={10 * 60 * 1000}
         isRunning={true}
       />,
     );
@@ -128,7 +132,7 @@ describe("MeetingTimer", () => {
     const { container } = render(
       <MeetingTimer
         totalElapsed={5 * 60 * 1000}
-        totalEstimated={10}
+        totalEstimated={10 * 60 * 1000}
         isRunning={true}
       />,
     );
