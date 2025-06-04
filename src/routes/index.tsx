@@ -266,72 +266,79 @@ function MeetingTimeTracker() {
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-6xl mx-auto p-4 sm:p-6 pb-20">
-        {/* Timer display first */}
-        {agendaItems.length > 0 && (
-          <div className="mb-4 sm:mb-6">
+        {/* Timer and Navigation Controls */}
+        <div className="mb-4 sm:mb-6">
+          {/* Timer display - only when there are agenda items */}
+          {agendaItems.length > 0 && (
             <MeetingTimer
               totalElapsed={totalElapsed}
               totalEstimated={totalEstimated}
               isRunning={isRunning}
               agendaItems={agendaItems}
             />
+          )}
 
-            {/* Control buttons below timer */}
-            <div className="flex gap-2 flex-wrap justify-center mt-4">
-              {!isRunning && (
-                <button
-                  type="button"
-                  onClick={startMeeting}
-                  className="px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <Play size={18} />
-                  {t("button.startMeeting")}
-                </button>
-              )}
-              {hasPreviousItem() && (
-                <button
-                  type="button"
-                  onClick={previousAgendaItem}
-                  className="px-6 py-3 bg-gray-600 dark:bg-gray-600 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <ChevronLeft size={18} />
-                  {t("button.previousAgenda")}
-                </button>
-              )}
-              {hasNextItem && (
-                <button
-                  type="button"
-                  onClick={nextAgendaItem}
-                  className="px-6 py-3 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <ChevronRight size={18} />
-                  {hasActiveItem
-                    ? t("button.nextAgenda")
-                    : t("button.startNext")}
-                </button>
-              )}
-              {allItemsComplete && (
-                <button
-                  type="button"
-                  onClick={saveMeeting}
-                  className="px-6 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <History size={18} />
-                  {t("button.saveMeeting")}
-                </button>
-              )}
-              {allItemsComplete && (
-                <Link
-                  to="/retrospective"
-                  className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <BarChart3 size={18} />
-                  {t("button.retrospective")}
-                </Link>
-              )}
+          {/* Control buttons - always visible */}
+          <div className="flex gap-2 flex-wrap justify-center mt-4">
+            {/* Navigation buttons - always visible with proper disabled states */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={previousAgendaItem}
+                disabled={!hasPreviousItem()}
+                className="px-6 py-3 bg-gray-600 dark:bg-gray-600 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-600 dark:disabled:hover:bg-gray-600"
+              >
+                <ChevronLeft size={18} />
+                {t("button.previousAgenda")}
+              </button>
+              
+              <button
+                type="button"
+                onClick={nextAgendaItem}
+                disabled={!hasNextItem}
+                className="px-6 py-3 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 dark:disabled:hover:bg-blue-600"
+              >
+                <ChevronRight size={18} />
+                {hasActiveItem
+                  ? t("button.nextAgenda")
+                  : t("button.startNext")}
+              </button>
             </div>
+
+            {/* Control buttons */}
+            {!isRunning && agendaItems.length > 0 && (
+              <button
+                type="button"
+                onClick={startMeeting}
+                className="px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+              >
+                <Play size={18} />
+                {t("button.startMeeting")}
+              </button>
+            )}
+            
+            {allItemsComplete && (
+              <button
+                type="button"
+                onClick={saveMeeting}
+                className="px-6 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+              >
+                <History size={18} />
+                {t("button.saveMeeting")}
+              </button>
+            )}
+            
+            {allItemsComplete && (
+              <Link
+                to="/retrospective"
+                className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+              >
+                <BarChart3 size={18} />
+                {t("button.retrospective")}
+              </Link>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Agenda Management and Progress */}
         <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
