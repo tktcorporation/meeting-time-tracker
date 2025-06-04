@@ -1,8 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   BarChart3,
+  ChevronRight,
   History,
-  ListChecks,
   Pause,
   Play,
   RotateCcw,
@@ -155,6 +155,27 @@ function MeetingTimeTracker() {
     }
   };
 
+  const nextAgendaItem = () => {
+    if (isRunning) {
+      completeCurrentItem();
+    } else {
+      // If not running, just move to next incomplete item
+      const nextIncompleteIndex = agendaItems.findIndex(
+        (item) => !item.actualMinutes,
+      );
+      if (nextIncompleteIndex !== -1) {
+        setAgendaItems((items) =>
+          items.map((item, index) => ({
+            ...item,
+            isActive: index === nextIncompleteIndex,
+            startTime: index === nextIncompleteIndex ? Date.now() : undefined,
+          })),
+        );
+        setIsRunning(true);
+      }
+    }
+  };
+
   const resetMeeting = () => {
     setIsRunning(false);
     setAgendaItems((items) =>
@@ -227,6 +248,8 @@ function MeetingTimeTracker() {
   const completedItems = agendaItems.filter((item) => item.actualMinutes);
   const allItemsComplete =
     agendaItems.length > 0 && agendaItems.every((item) => item.actualMinutes);
+  const hasActiveItem = agendaItems.some((item) => item.isActive);
+  const hasNextItem = agendaItems.some((item) => !item.actualMinutes);
 
   const deleteAgendaItem = (id: string) => {
     setAgendaItems((items) => items.filter((item) => item.id !== id));
@@ -289,14 +312,18 @@ function MeetingTimeTracker() {
                   {t("button.pause")}
                 </button>
               )}
-              <button
-                type="button"
-                onClick={resetMeeting}
-                className="px-6 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-              >
-                <RotateCcw size={18} />
-                {t("button.reset")}
-              </button>
+              {hasNextItem && (
+                <button
+                  type="button"
+                  onClick={nextAgendaItem}
+                  className="px-6 py-3 bg-blue-600 dark:bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <ChevronRight size={18} />
+                  {hasActiveItem
+                    ? t("button.nextAgenda")
+                    : t("button.startNext")}
+                </button>
+              )}
               {allItemsComplete && (
                 <button
                   type="button"
@@ -307,7 +334,7 @@ function MeetingTimeTracker() {
                   {t("button.saveMeeting")}
                 </button>
               )}
-              {completedItems.length > 0 && (
+              {allItemsComplete && (
                 <Link
                   to="/retrospective"
                   className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
@@ -322,6 +349,12 @@ function MeetingTimeTracker() {
 
         {/* Agenda Management and Progress */}
         <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
+          <div className="flex items-center gap-2 mb-6">
+            <History className="w-5 h-5 text-primary" />
+            <h2 className="text-lg sm:text-xl font-semibold text-card-foreground">
+              {t("agenda.management")}
+            </h2>
+          </div>
           <MeetingProgress
             items={agendaItems}
             isTimerRunning={isRunning}
@@ -382,6 +415,18 @@ function MeetingTimeTracker() {
               setAgendaItems(sampleItems);
             }}
           />
+
+          {/* Secondary actions */}
+          <div className="mt-6 pt-4 border-t border-border flex justify-center">
+            <button
+              type="button"
+              onClick={resetMeeting}
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2 text-sm"
+            >
+              <RotateCcw size={16} />
+              {t("button.reset")}
+            </button>
+          </div>
         </div>
       </main>
     </div>
