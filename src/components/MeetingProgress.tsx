@@ -27,6 +27,8 @@ interface MeetingProgressProps {
   onItemDelete?: (index: number) => void;
   onItemAdd?: (name: string, estimatedMinutes: number) => void;
   onAddSample?: () => void;
+  isTimerRunning?: boolean;
+  getCurrentElapsed?: (item: AgendaItem) => number;
 }
 
 /**
@@ -42,6 +44,8 @@ interface MeetingProgressProps {
  * @param onItemDelete - Callback to remove an agenda item
  * @param onItemAdd - Callback to create a new agenda item
  * @param onAddSample - Callback to populate with sample data
+ * @param isTimerRunning - Whether the meeting timer is currently running (disables editing when true)
+ * @param getCurrentElapsed - Function to get current elapsed time for an item
  */
 export function MeetingProgress({
   items,
@@ -50,6 +54,8 @@ export function MeetingProgress({
   onItemDelete,
   onItemAdd,
   onAddSample,
+  isTimerRunning = false,
+  getCurrentElapsed = () => 0,
 }: MeetingProgressProps) {
   const { t } = useLanguage();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -170,8 +176,8 @@ export function MeetingProgress({
         </div>
       )}
 
-      {/* Add new item form */}
-      {isAddingNew ? (
+      {/* Add new item form - disabled when timer is running */}
+      {isAddingNew && !isTimerRunning ? (
         <div className="p-4 bg-card border border-border rounded-lg">
           <div className="space-y-3">
             <input
@@ -212,16 +218,18 @@ export function MeetingProgress({
           </div>
         </div>
       ) : (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={startAddNew}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            {t("agenda.add")}
-          </button>
-        </div>
+        !isTimerRunning && (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={startAddNew}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              {t("agenda.add")}
+            </button>
+          </div>
+        )
       )}
 
       {/* Visual timeline */}
@@ -266,6 +274,12 @@ export function MeetingProgress({
               <div className={`flex-1 pb-8 ${isLast ? "pb-0" : ""}`}>
                 {editingIndex === index ? (
                   <div className="space-y-3">
+                    {isCompleted && (
+                      <div className="text-xs text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
+                        ⚠️ This item is already completed. Editing will not
+                        affect recorded time.
+                      </div>
+                    )}
                     <input
                       type="text"
                       value={editName}
@@ -309,32 +323,63 @@ export function MeetingProgress({
                       >
                         {item.name}
                       </h4>
-                      {!item.isActive &&
-                        !isCompleted &&
-                        onItemEdit &&
-                        onItemDelete && (
-                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              type="button"
-                              onClick={() => startEdit(index)}
-                              className="p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onItemDelete(index)}
-                              className="p-1 text-muted-foreground hover:text-destructive rounded transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
+                      {!isTimerRunning && onItemEdit && onItemDelete && (
+                        <div className="flex gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(index)}
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
+                            title="Edit item"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onItemDelete(index)}
+                            className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
+                            title="Delete item"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 mt-1">
                       <span className="text-sm text-muted-foreground">
                         {item.estimatedMinutes} min
                       </span>
+                      {item.isActive && (
+                        <span className="text-sm font-medium text-primary">
+                          {(() => {
+                            const elapsedMs = getCurrentElapsed(item);
+                            const estimatedMs = item.estimatedMinutes * 60000;
+                            const remainingMs = Math.max(
+                              0,
+                              estimatedMs - elapsedMs,
+                            );
+                            const isOvertime = elapsedMs > estimatedMs;
+
+                            if (isOvertime) {
+                              const overtimeMs = elapsedMs - estimatedMs;
+                              const overtimeMin = Math.floor(
+                                overtimeMs / 60000,
+                              );
+                              const overtimeSec = Math.floor(
+                                (overtimeMs % 60000) / 1000,
+                              );
+                              return `+${overtimeMin}:${overtimeSec.toString().padStart(2, "0")}`;
+                            } else {
+                              const remainingMin = Math.floor(
+                                remainingMs / 60000,
+                              );
+                              const remainingSec = Math.floor(
+                                (remainingMs % 60000) / 1000,
+                              );
+                              return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left`;
+                            }
+                          })()}
+                        </span>
+                      )}
                       {item.actualMinutes && (
                         <span
                           className={`text-sm font-medium

@@ -251,13 +251,22 @@ function MeetingTimeTracker() {
     return sum + getCurrentElapsed(item);
   }, 0);
 
+  const totalEstimated = agendaItems.reduce(
+    (sum, item) => sum + item.estimatedMinutes,
+    0,
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-6xl mx-auto p-4 sm:p-6 pb-20">
         {/* Timer display first */}
         {agendaItems.length > 0 && (
           <div className="mb-4 sm:mb-6">
-            <MeetingTimer totalElapsed={totalElapsed} isRunning={isRunning} />
+            <MeetingTimer
+              totalElapsed={totalElapsed}
+              totalEstimated={totalEstimated}
+              isRunning={isRunning}
+            />
 
             {/* Control buttons below timer */}
             <div className="flex gap-2 flex-wrap justify-center mt-4">
@@ -321,6 +330,8 @@ function MeetingTimeTracker() {
           </div>
           <MeetingProgress
             items={agendaItems}
+            isTimerRunning={isRunning}
+            getCurrentElapsed={getCurrentElapsed}
             onItemClick={(index) => {
               if (agendaItems[index].isActive) {
                 completeCurrentItem();
