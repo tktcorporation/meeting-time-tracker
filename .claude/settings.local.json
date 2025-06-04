@@ -18,8 +18,8 @@
       "Bash(wc:*)",
       "Bash(tr:*)",
       "WebFetch",
-      "Bash(rm:*)",
-      "Bash(bun add:*)"
+      "Bash(bun add:*)",
+      "Bash(biome check:*)"
     ],
     "deny": []
   }

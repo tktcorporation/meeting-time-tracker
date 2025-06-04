@@ -35,7 +35,30 @@ interface Meeting {
 function MeetingTimeTracker() {
   const { t } = useLanguage();
   const [agendaItems, setAgendaItems] = useState<AgendaItem[]>(() => {
-    // Initialize with sample data
+    // Try to restore active session from localStorage
+    const savedSession = localStorage.getItem("active-meeting-session");
+    if (savedSession) {
+      try {
+        const session = JSON.parse(savedSession);
+        // Update elapsed times based on saved timestamps
+        return session.agendaItems.map((item: AgendaItem) => {
+          if (item.isActive && item.startTime) {
+            // Calculate elapsed time since browser was closed
+            const additionalElapsed = Date.now() - item.startTime;
+            return {
+              ...item,
+              elapsedTime: item.elapsedTime + additionalElapsed,
+              startTime: Date.now(), // Reset start time to now
+            };
+          }
+          return item;
+        });
+      } catch (e) {
+        console.error("Failed to restore session:", e);
+      }
+    }
+
+    // Initialize with sample data if no saved session
     const now = Date.now();
     return [
       {
@@ -68,7 +91,19 @@ function MeetingTimeTracker() {
       },
     ];
   });
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(() => {
+    // Restore running state from localStorage
+    const savedSession = localStorage.getItem("active-meeting-session");
+    if (savedSession) {
+      try {
+        const session = JSON.parse(savedSession);
+        return session.isRunning || false;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  });
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [meetingHistory, setMeetingHistory] = useState<Meeting[]>([]);
 
@@ -79,6 +114,16 @@ function MeetingTimeTracker() {
     }
   }, []);
 
+  // Save active session to localStorage whenever state changes
+  useEffect(() => {
+    const sessionData = {
+      agendaItems,
+      isRunning,
+      savedAt: Date.now(),
+    };
+    localStorage.setItem("active-meeting-session", JSON.stringify(sessionData));
+  }, [agendaItems, isRunning]);
+
   useEffect(() => {
     let interval: number | undefined;
     if (isRunning) {
@@ -88,6 +133,46 @@ function MeetingTimeTracker() {
     }
     return () => {
       if (interval) clearInterval(interval);
+    };
+  }, [isRunning]);
+
+  // Handle tab visibility changes to pause/resume timer properly
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && isRunning) {
+        // Tab is being hidden, save current state with timestamps
+        setAgendaItems((items) =>
+          items.map((item) => {
+            if (item.isActive && item.startTime) {
+              // Save elapsed time up to this point
+              return {
+                ...item,
+                elapsedTime: item.elapsedTime + (Date.now() - item.startTime),
+                startTime: Date.now(), // Will be recalculated on restore
+              };
+            }
+            return item;
+          }),
+        );
+      } else if (!document.hidden && isRunning) {
+        // Tab is becoming visible, restore with fresh timestamp
+        setAgendaItems((items) =>
+          items.map((item) => {
+            if (item.isActive) {
+              return {
+                ...item,
+                startTime: Date.now(), // Fresh start time
+              };
+            }
+            return item;
+          }),
+        );
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isRunning]);
 
@@ -187,6 +272,8 @@ function MeetingTimeTracker() {
         elapsedTime: 0,
       })),
     );
+    // Clear the active session from localStorage
+    localStorage.removeItem("active-meeting-session");
   };
 
   const saveMeeting = () => {
@@ -202,6 +289,8 @@ function MeetingTimeTracker() {
       const updatedHistory = [meeting, ...meetingHistory].slice(0, 10);
       setMeetingHistory(updatedHistory);
       localStorage.setItem("meeting-history", JSON.stringify(updatedHistory));
+      // Clear active session after saving
+      localStorage.removeItem("active-meeting-session");
     }
   };
 
@@ -245,7 +334,7 @@ function MeetingTimeTracker() {
   //   return `${sign}${formatTime(Math.abs(diff))}`;
   // };
 
-  const completedItems = agendaItems.filter((item) => item.actualMinutes);
+  // const completedItems = agendaItems.filter((item) => item.actualMinutes);
   const allItemsComplete =
     agendaItems.length > 0 && agendaItems.every((item) => item.actualMinutes);
   const hasActiveItem = agendaItems.some((item) => item.isActive);

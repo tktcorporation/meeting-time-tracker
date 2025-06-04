@@ -19,6 +19,8 @@ interface AgendaItem {
   estimatedMinutes: number;
   actualMinutes?: number;
   isActive: boolean;
+  startTime?: number;
+  elapsedTime: number;
 }
 
 interface MeetingProgressProps {
@@ -361,15 +363,14 @@ export function MeetingProgress({
                                 (overtimeMs % 60000) / 1000,
                               );
                               return `+${overtimeMin}:${overtimeSec.toString().padStart(2, "0")}`;
-                            } else {
-                              const remainingMin = Math.floor(
-                                remainingMs / 60000,
-                              );
-                              const remainingSec = Math.floor(
-                                (remainingMs % 60000) / 1000,
-                              );
-                              return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left`;
                             }
+                            const remainingMin = Math.floor(
+                              remainingMs / 60000,
+                            );
+                            const remainingSec = Math.floor(
+                              (remainingMs % 60000) / 1000,
+                            );
+                            return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left`;
                           })()}
                         </span>
                       )}
