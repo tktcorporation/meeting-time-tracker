@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   BarChart3,
+  ChevronLeft,
   ChevronRight,
   History,
   Pause,
@@ -261,6 +262,59 @@ function MeetingTimeTracker() {
     }
   };
 
+  const previousAgendaItem = () => {
+    const currentActiveIndex = agendaItems.findIndex((item) => item.isActive);
+    let targetIndex = -1;
+
+    if (currentActiveIndex > 0) {
+      // If there's an active item, go to the previous one
+      targetIndex = currentActiveIndex - 1;
+    } else if (currentActiveIndex === -1) {
+      // If no active item, find the last completed item
+      for (let i = agendaItems.length - 1; i >= 0; i--) {
+        if (agendaItems[i].actualMinutes) {
+          targetIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (targetIndex >= 0) {
+      // Pause current timer if running
+      if (isRunning) {
+        pauseMeeting();
+      }
+
+      // Restore the target item to continue from where it was
+      setAgendaItems((items) =>
+        items.map((item, index) => {
+          if (index === targetIndex) {
+            // If item was completed, restore its elapsed time from actualMinutes
+            const restoredElapsedTime = item.actualMinutes 
+              ? item.actualMinutes * 60000 // Convert minutes back to milliseconds
+              : item.elapsedTime; // Use existing elapsed time if not completed
+            
+            return {
+              ...item,
+              isActive: true,
+              actualMinutes: undefined, // Clear completion status to allow continuation
+              startTime: Date.now(),
+              elapsedTime: restoredElapsedTime, // Restore previous elapsed time
+            };
+          }
+          return {
+            ...item,
+            isActive: false,
+            startTime: undefined,
+          };
+        }),
+      );
+
+      // Start the timer
+      setIsRunning(true);
+    }
+  };
+
   const resetMeeting = () => {
     setIsRunning(false);
     setAgendaItems((items) =>
@@ -339,6 +393,17 @@ function MeetingTimeTracker() {
     agendaItems.length > 0 && agendaItems.every((item) => item.actualMinutes);
   const hasActiveItem = agendaItems.some((item) => item.isActive);
   const hasNextItem = agendaItems.some((item) => !item.actualMinutes);
+  
+  const hasPreviousItem = () => {
+    const currentActiveIndex = agendaItems.findIndex((item) => item.isActive);
+    if (currentActiveIndex > 0) {
+      return true; // Has items before current active
+    }
+    if (currentActiveIndex === -1) {
+      return agendaItems.some((item) => item.actualMinutes); // Has completed items
+    }
+    return false;
+  };
 
   const deleteAgendaItem = (id: string) => {
     setAgendaItems((items) => items.filter((item) => item.id !== id));
@@ -409,6 +474,16 @@ function MeetingTimeTracker() {
                 >
                   <Pause size={18} />
                   {t("button.pause")}
+                </button>
+              )}
+              {hasPreviousItem() && (
+                <button
+                  type="button"
+                  onClick={previousAgendaItem}
+                  className="px-6 py-3 bg-gray-600 dark:bg-gray-600 text-white rounded-md hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <ChevronLeft size={18} />
+                  {t("button.previousAgenda")}
                 </button>
               )}
               {hasNextItem && (

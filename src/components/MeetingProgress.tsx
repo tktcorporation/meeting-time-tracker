@@ -173,7 +173,7 @@ export function MeetingProgress({
   /**
    * Handles drag start event for reordering agenda items.
    * Records the index of the item being dragged.
-   * 
+   *
    * @param index - Zero-based index of the item being dragged
    */
   const handleDragStart = (index: number) => {
@@ -183,7 +183,7 @@ export function MeetingProgress({
   /**
    * Handles drag over event to allow dropping.
    * Prevents default behavior to enable drop functionality.
-   * 
+   *
    * @param e - Drag event object
    */
   const handleDragOver = (e: React.DragEvent) => {
@@ -193,7 +193,7 @@ export function MeetingProgress({
   /**
    * Handles drop event for reordering agenda items.
    * Calls parent callback to reorder items and resets drag state.
-   * 
+   *
    * @param e - Drag event object
    * @param dropIndex - Zero-based index where the item should be dropped
    */
@@ -216,13 +216,13 @@ export function MeetingProgress({
   /**
    * Handles touch start event for mobile drag and drop.
    * Records the initial touch position and item index.
-   * 
+   *
    * @param e - Touch event object
    * @param index - Zero-based index of the item being touched
    */
   const handleTouchStart = (e: React.TouchEvent, index: number) => {
     if (!onItemReorder || items[index].isActive) return;
-    
+
     setTouchStartY(e.touches[0].clientY);
     setTouchStartIndex(index);
     setDraggedIndex(index);
@@ -231,47 +231,53 @@ export function MeetingProgress({
   /**
    * Handles touch move event for mobile drag and drop.
    * Calculates the drop target based on touch position.
-   * 
+   *
    * @param e - Touch event object
    */
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStartY === null || touchStartIndex === null) return;
-    
+
     e.preventDefault(); // Prevent scrolling
-    
+
     const currentY = e.touches[0].clientY;
     const deltaY = currentY - touchStartY;
-    
+
     // Calculate which item we're hovering over
     const itemHeight = 80; // Approximate height of each timeline item
     const indexChange = Math.round(deltaY / itemHeight);
-    const newIndex = Math.max(0, Math.min(items.length - 1, touchStartIndex + indexChange));
-    
+    const newIndex = Math.max(
+      0,
+      Math.min(items.length - 1, touchStartIndex + indexChange),
+    );
+
     // Visual feedback could be added here
   };
 
   /**
    * Handles touch end event for mobile drag and drop.
    * Completes the reorder operation if position changed significantly.
-   * 
+   *
    * @param e - Touch event object
    */
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartY === null || touchStartIndex === null) return;
-    
+
     const currentY = e.changedTouches[0].clientY;
     const deltaY = currentY - touchStartY;
-    
+
     // Calculate target index based on movement
     const itemHeight = 80;
     const indexChange = Math.round(deltaY / itemHeight);
-    const newIndex = Math.max(0, Math.min(items.length - 1, touchStartIndex + indexChange));
-    
+    const newIndex = Math.max(
+      0,
+      Math.min(items.length - 1, touchStartIndex + indexChange),
+    );
+
     // Only reorder if position changed and callback exists
     if (newIndex !== touchStartIndex && onItemReorder) {
       onItemReorder(touchStartIndex, newIndex);
     }
-    
+
     // Reset touch state
     setTouchStartY(null);
     setTouchStartIndex(null);
@@ -281,7 +287,7 @@ export function MeetingProgress({
   /**
    * Moves an item up in the list order.
    * Provides alternative to drag and drop for better mobile accessibility.
-   * 
+   *
    * @param index - Zero-based index of the item to move up
    */
   const moveItemUp = (index: number) => {
@@ -293,7 +299,7 @@ export function MeetingProgress({
   /**
    * Moves an item down in the list order.
    * Provides alternative to drag and drop for better mobile accessibility.
-   * 
+   *
    * @param index - Zero-based index of the item to move down
    */
   const moveItemDown = (index: number) => {
@@ -332,7 +338,6 @@ export function MeetingProgress({
         </div>
       )}
 
-
       {/* Visual timeline */}
       <div className="relative">
         {items.map((item, index) => {
@@ -341,10 +346,10 @@ export function MeetingProgress({
           const isDragging = draggedIndex === index;
 
           return (
-            <div 
-              key={item.id} 
+            <div
+              key={item.id}
               className={`flex items-start gap-2 group relative transition-all duration-200 ${
-                isDragging ? 'opacity-50 scale-95' : ''
+                isDragging ? "opacity-50 scale-95" : ""
               }`}
               draggable={onItemReorder && !item.isActive}
               onDragStart={() => handleDragStart(index)}
@@ -371,7 +376,7 @@ export function MeetingProgress({
                 - Mobile (sm:hidden): Up/down arrow buttons for touch-friendly interaction
                 - Desktop (hidden sm:flex): Drag handle for mouse-based drag & drop
               */}
-              
+
               {/* Mobile reorder buttons (shown on small screens) */}
               {onItemReorder && !item.isActive && (
                 <div className="flex flex-col gap-1 sm:hidden">
@@ -398,7 +403,7 @@ export function MeetingProgress({
 
               {/* Desktop drag handle (shown on larger screens) */}
               {onItemReorder && !item.isActive && (
-                <div 
+                <div
                   className="hidden sm:flex items-center cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
                   title="Drag to reorder"
                 >
@@ -497,7 +502,7 @@ export function MeetingProgress({
                           >
                             <Edit className="w-4 h-4" />
                           </button>
-                          
+
                           {/* 
                             Delete button with strict deletion policy:
                             
@@ -523,16 +528,24 @@ export function MeetingProgress({
                             type="button"
                             onClick={() => onItemDelete(index)}
                             className={`p-2 rounded transition-colors ${
-                              item.isActive || item.elapsedTime > 0 || item.actualMinutes
+                              item.isActive ||
+                              item.elapsedTime > 0 ||
+                              item.actualMinutes
                                 ? "text-muted-foreground/50 cursor-not-allowed"
                                 : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                             }`}
                             title={
-                              item.isActive || item.elapsedTime > 0 || item.actualMinutes
+                              item.isActive ||
+                              item.elapsedTime > 0 ||
+                              item.actualMinutes
                                 ? "Cannot delete agenda item with elapsed time"
                                 : "Delete item"
                             }
-                            disabled={item.isActive || item.elapsedTime > 0 || item.actualMinutes !== undefined}
+                            disabled={
+                              item.isActive ||
+                              item.elapsedTime > 0 ||
+                              item.actualMinutes !== undefined
+                            }
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -574,6 +587,37 @@ export function MeetingProgress({
                           })()}
                         </span>
                       )}
+                      {!item.isActive && !item.actualMinutes && item.elapsedTime > 0 && (
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {(() => {
+                            const elapsedMs = item.elapsedTime;
+                            const estimatedMs = item.estimatedMinutes * 60000;
+                            const remainingMs = Math.max(
+                              0,
+                              estimatedMs - elapsedMs,
+                            );
+                            const isOvertime = elapsedMs > estimatedMs;
+
+                            if (isOvertime) {
+                              const overtimeMs = elapsedMs - estimatedMs;
+                              const overtimeMin = Math.floor(
+                                overtimeMs / 60000,
+                              );
+                              const overtimeSec = Math.floor(
+                                (overtimeMs % 60000) / 1000,
+                              );
+                              return `+${overtimeMin}:${overtimeSec.toString().padStart(2, "0")} (paused)`;
+                            }
+                            const remainingMin = Math.floor(
+                              remainingMs / 60000,
+                            );
+                            const remainingSec = Math.floor(
+                              (remainingMs % 60000) / 1000,
+                            );
+                            return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left (paused)`;
+                          })()}
+                        </span>
+                      )}
                       {item.actualMinutes && (
                         <span
                           className={`text-sm font-medium
@@ -600,7 +644,7 @@ export function MeetingProgress({
             </div>
           );
         })}
-        
+
         {/* Add new item form - positioned after all agenda items */}
         {isAddingNew ? (
           <div className="p-4 bg-card border border-border rounded-lg mt-4">

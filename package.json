@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "format": "biome format",
     "lint": "bun run lint:biome && bun run lint:action && bun run lint:knip && bun run lint:types",
-    "lint:fix": "bun run lint:biome:fix && bun run lint:action",
+    "lint:fix": "bun run lint:biome:fix && bun run lint:action && bun run lint:types",
     "lint:types": "tsgo --noEmit",
     "lint:biome": "biome check",
     "lint:biome:fix": "biome check --write",

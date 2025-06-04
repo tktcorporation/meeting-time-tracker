@@ -45,7 +45,10 @@ export function MeetingTimer({
   const isOvertime = totalElapsed > totalEstimatedMs;
 
   // Calculate progress percentage (capped at 100% for overtime)
-  const progressPercentage = Math.min(100, (totalElapsed / totalEstimatedMs) * 100);
+  const progressPercentage = Math.min(
+    100,
+    (totalElapsed / totalEstimatedMs) * 100,
+  );
 
   // For overtime, show elapsed time beyond estimate
   const displayMs = isOvertime ? totalElapsed - totalEstimatedMs : remainingMs;
@@ -57,39 +60,40 @@ export function MeetingTimer({
   // Format time display helper
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   // Calculate agenda progress adjustment
   const calculateProgressAdjustment = () => {
     if (!agendaItems || agendaItems.length === 0) return 0;
-    
+
     let adjustmentMs = 0;
-    
+
     for (const item of agendaItems) {
       if (item.actualMinutes !== undefined) {
         // Completed item: calculate difference between actual and estimated
         const actualMs = item.actualMinutes * 60000;
         const estimatedMs = item.estimatedMinutes * 60000;
-        adjustmentMs += (actualMs - estimatedMs);
+        adjustmentMs += actualMs - estimatedMs;
       } else if (item.isActive && item.startTime) {
         // Current active item: calculate current progress vs pace
         const currentElapsed = item.elapsedTime + (Date.now() - item.startTime);
         const estimatedMs = item.estimatedMinutes * 60000;
         if (currentElapsed > estimatedMs) {
           // Currently running overtime
-          adjustmentMs += (currentElapsed - estimatedMs);
+          adjustmentMs += currentElapsed - estimatedMs;
         }
       }
     }
-    
+
     return adjustmentMs;
   };
 
   // Calculate start and end times
   const meetingStartTime = startTime || Date.now() - totalElapsed;
   const progressAdjustmentMs = calculateProgressAdjustment();
-  const estimatedEndTime = meetingStartTime + totalEstimatedMs + progressAdjustmentMs;
+  const estimatedEndTime =
+    meetingStartTime + totalEstimatedMs + progressAdjustmentMs;
 
   return (
     <div className="relative">
@@ -174,12 +178,15 @@ export function MeetingTimer({
             <div className="font-medium flex items-center gap-1">
               Est. End
               {progressAdjustmentMs !== 0 && (
-                <span className={`text-xs px-1 py-0.5 rounded ${
-                  progressAdjustmentMs > 0 
-                    ? "bg-destructive/10 text-destructive" 
-                    : "bg-green-500/10 text-green-600 dark:text-green-500"
-                }`}>
-                  {progressAdjustmentMs > 0 ? "+" : ""}{Math.round(progressAdjustmentMs / 60000)}m
+                <span
+                  className={`text-xs px-1 py-0.5 rounded ${
+                    progressAdjustmentMs > 0
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-green-500/10 text-green-600 dark:text-green-500"
+                  }`}
+                >
+                  {progressAdjustmentMs > 0 ? "+" : ""}
+                  {Math.round(progressAdjustmentMs / 60000)}m
                 </span>
               )}
             </div>
