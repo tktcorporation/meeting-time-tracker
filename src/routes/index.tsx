@@ -254,8 +254,65 @@ function MeetingTimeTracker() {
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-6xl mx-auto p-4 sm:p-6 pb-20">
-        {/* Unified Agenda Management and Progress */}
-        <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-border">
+        {/* Timer display first */}
+        {agendaItems.length > 0 && (
+          <div className="mb-4 sm:mb-6">
+            <MeetingTimer totalElapsed={totalElapsed} isRunning={isRunning} />
+
+            {/* Control buttons below timer */}
+            <div className="flex gap-2 flex-wrap justify-center mt-4">
+              {!isRunning ? (
+                <button
+                  type="button"
+                  onClick={startMeeting}
+                  className="px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <Play size={18} />
+                  {t("button.startMeeting")}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={pauseMeeting}
+                  className="px-6 py-3 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <Pause size={18} />
+                  {t("button.pause")}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={resetMeeting}
+                className="px-6 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+              >
+                <RotateCcw size={18} />
+                {t("button.reset")}
+              </button>
+              {allItemsComplete && (
+                <button
+                  type="button"
+                  onClick={saveMeeting}
+                  className="px-6 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <History size={18} />
+                  {t("button.saveMeeting")}
+                </button>
+              )}
+              {completedItems.length > 0 && (
+                <Link
+                  to="/retrospective"
+                  className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
+                >
+                  <BarChart3 size={18} />
+                  {t("button.retrospective")}
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Agenda Management and Progress */}
+        <div className="bg-card rounded-lg shadow-lg p-4 sm:p-6 border border-border">
           <div className="flex items-center gap-2 mb-6">
             <ListChecks className="w-5 h-5 text-primary" />
             <h2 className="text-lg sm:text-xl font-semibold text-card-foreground">
@@ -321,65 +378,6 @@ function MeetingTimeTracker() {
             }}
           />
         </div>
-
-        {agendaItems.length > 0 && (
-          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-            {/* Timer display */}
-            <div>
-              <MeetingTimer totalElapsed={totalElapsed} isRunning={isRunning} />
-
-              {/* Control buttons below timer */}
-              <div className="flex gap-2 flex-wrap justify-center mt-4">
-                {!isRunning ? (
-                  <button
-                    type="button"
-                    onClick={startMeeting}
-                    className="px-6 py-3 bg-green-600 dark:bg-green-600 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                  >
-                    <Play size={18} />
-                    {t("button.startMeeting")}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={pauseMeeting}
-                    className="px-6 py-3 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                  >
-                    <Pause size={18} />
-                    {t("button.pause")}
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={resetMeeting}
-                  className="px-6 py-3 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <RotateCcw size={18} />
-                  {t("button.reset")}
-                </button>
-                {allItemsComplete && (
-                  <button
-                    type="button"
-                    onClick={saveMeeting}
-                    className="px-6 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                  >
-                    <History size={18} />
-                    {t("button.saveMeeting")}
-                  </button>
-                )}
-                {completedItems.length > 0 && (
-                  <Link
-                    to="/retrospective"
-                    className="px-6 py-3 bg-indigo-600 dark:bg-indigo-600 text-white rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                  >
-                    <BarChart3 size={18} />
-                    {t("button.retrospective")}
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
