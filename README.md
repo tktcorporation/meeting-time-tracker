@@ -1,6 +1,6 @@
 # Meeting Time Tracker
 
-A real-time meeting progress tracking application built with modern web technologies. Track your meeting time, visualize progress, and generate retrospectives to improve future meetings.
+A mobile-first meeting agenda tracking application with real-time progress monitoring. Track individual agenda items, visualize progress, and maintain meeting history with persistent state across browser sessions.
 
 ![Meeting Time Tracker](https://img.shields.io/badge/TanStack-Start-ff4154?style=flat-square)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=flat-square)
@@ -9,12 +9,25 @@ A real-time meeting progress tracking application built with modern web technolo
 
 ## Features
 
-- 📊 **Real-time Progress Tracking** - Visual progress bars show meeting time usage
+### Core Functionality
+- 📋 **Agenda-Based Time Tracking** - Track time for individual agenda items
+- ⏱️ **Real-time Progress Monitoring** - Visual timeline shows active item and progress
+- 💾 **Persistent State** - Meeting progress continues even after closing browser
+- 📊 **Meeting History** - Save completed meetings for future reference
+- 🔄 **Flexible Controls** - Start, pause, skip items, and reset as needed
+
+### User Experience
 - 🌍 **Multi-language Support** - Switch between English and Japanese
-- 🌓 **Dark/Light Theme** - Comfortable viewing in any lighting condition
-- 📝 **Meeting History** - Track past meetings and their outcomes
-- 🔄 **Live Updates** - See elapsed time update in real-time
-- 📈 **Retrospectives** - Generate insights from completed meetings
+- 🌓 **Dark/Light Theme** - Optimized for readability in any lighting
+- 📱 **Mobile-First Design** - Touch-friendly interface with responsive layout
+- ✏️ **Inline Editing** - Edit agenda items directly without modal dialogs
+- 🎯 **Sample Data** - Pre-populated Japanese agenda items for quick start
+
+### Technical Features
+- 🔄 **Background Timer** - Time continues tracking when tab is inactive
+- 💾 **LocalStorage Persistence** - Automatic save/restore of active sessions
+- ⚡ **Optimized Performance** - Efficient state updates and rendering
+- 🎨 **WCAG AA Compliant** - Accessible color contrast in all themes
 
 ## Getting Started
 
@@ -43,46 +56,80 @@ bun run dev
 
 The application will be available at `http://localhost:3000`.
 
-## Usage
+## Usage Guide
 
-### Creating a Meeting
+### Managing Agenda Items
 
-1. Enter the meeting title
-2. Set the duration (in minutes)
-3. Add participant names (comma-separated)
-4. Click "Start Meeting" to begin tracking
+1. **Adding Items**: Click "アジェンダを追加" (Add Agenda) button
+   - Enter topic name
+   - Set estimated time (in minutes)
+   - Click save (✓) to add
 
-### During the Meeting
+2. **Editing Items**: Click edit icon (✏️) on any item
+   - Modify name or estimated time
+   - Save changes or cancel
+   - Note: Cannot edit while timer is running
 
-- The progress bar shows time usage in real-time
-- Color indicators:
-  - 🟩 Green: Under 50% time used
-  - 🟨 Yellow: 50-80% time used
-  - 🟧 Orange: 80-90% time used
-  - 🟥 Red: Over 90% time used
-- Use pause/resume buttons to control the timer
-- Click "End Meeting" when finished
+3. **Deleting Items**: Click trash icon (🗑️) to remove items
 
-### Meeting History
+### Running a Meeting
 
-- View all past meetings in the history section
-- See duration, participants, and efficiency metrics
-- Access retrospectives for completed meetings
+1. **Start Meeting**: Click "会議を開始" (Start Meeting)
+   - First agenda item becomes active automatically
+   - Timer begins counting
+
+2. **During Meeting**:
+   - Active item shows pulsing indicator and countdown
+   - Click "次のアジェンダ" (Next Agenda) to move to next item
+   - Current item is marked complete with actual time recorded
+   - Use "一時停止" (Pause) to pause all timers
+
+3. **Visual Indicators**:
+   - ⚪ Gray circle: Pending item
+   - 🔵 Blue pulsing: Currently active
+   - ✅ Green check: Completed item
+   - Progress bar shows overall meeting completion
+
+4. **Overtime Handling**:
+   - Timer shows remaining time in format "X:XX left"
+   - When overtime, displays "+X:XX" in red
+   - Completed items show difference from estimate
+
+### Meeting Completion
+
+1. **Save Meeting**: When all items complete, click "会議を保存"
+   - Meeting is saved to history (last 10 meetings kept)
+   - Active session is cleared
+
+2. **View Retrospective**: Click "振り返りを見る" to analyze:
+   - Time usage per agenda item
+   - Overall meeting efficiency
+   - Improvement suggestions
+
+3. **Reset Meeting**: Click "リセット" to clear all progress
+
+### Persistence Features
+
+- **Tab Switching**: Timer continues running in background
+- **Browser Restart**: Meeting state restored with accurate elapsed time
+- **Automatic Saving**: State saved to localStorage on every change
+- **Session Recovery**: Reopening app shows meeting in exact same state
 
 ### Customization
 
-- **Theme**: Click the sun/moon icon to toggle dark mode
-- **Language**: Click the language icon to switch between EN/JP
+- **Theme**: Toggle between light/dark mode for comfort
+- **Language**: Switch between English (EN) and Japanese (JP)
+- **Sample Data**: Use pre-populated agenda for testing
 
 ## Building for Production
 
-To create an optimized production build:
+Create an optimized production build:
 
 ```bash
 bun run build
 ```
 
-To preview the production build locally:
+Preview the production build:
 
 ```bash
 bun run start
@@ -98,8 +145,9 @@ bun run build      # Build for production
 bun run start      # Start production server
 bun run test       # Run tests with Vitest
 bun run lint       # Check code quality
-bun run format     # Format code
-bun run check      # Run all checks
+bun run lint:fix   # Auto-fix linting issues
+bun run format     # Format code with Biome
+bun run check      # Run comprehensive checks
 ```
 
 ### Project Structure
@@ -108,51 +156,92 @@ bun run check      # Run all checks
 meeting-time-tracker/
 ├── src/
 │   ├── routes/          # File-based routing
-│   ├── components/      # React components
-│   ├── contexts/        # Theme & language contexts
-│   ├── integrations/    # tRPC & TanStack Query setup
-│   └── styles.css       # Global styles & Tailwind
+│   │   ├── index.tsx    # Main meeting tracker
+│   │   ├── history.tsx  # Meeting history view
+│   │   └── retrospective.tsx # Meeting analysis
+│   ├── components/      # Reusable components
+│   │   ├── MeetingTimer.tsx    # Countdown display
+│   │   ├── MeetingProgress.tsx # Agenda timeline
+│   │   ├── TimeInput.tsx       # Time input control
+│   │   └── EmptyState.tsx      # No agenda display
+│   ├── contexts/        # Global state
+│   │   ├── ThemeContext.tsx    # Theme management
+│   │   └── LanguageContext.tsx # i18n support
+│   ├── integrations/    # External integrations
+│   └── styles.css       # Global styles
 ├── public/              # Static assets
 └── app.config.ts        # App configuration
 ```
 
 ### Tech Stack
 
-- **Framework**: [TanStack Start](https://tanstack.com/start) - Full-stack React framework
-- **Routing**: [TanStack Router](https://tanstack.com/router) - Type-safe file-based routing
-- **API**: [tRPC](https://trpc.io/) - End-to-end type-safe APIs
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-- **State**: [TanStack Query](https://tanstack.com/query) - Server state management
-- **Language**: TypeScript with strict mode
+- **Framework**: [TanStack Start](https://tanstack.com/start) - Full-stack React
+- **Routing**: [TanStack Router](https://tanstack.com/router) - Type-safe routing
+- **API**: [tRPC](https://trpc.io/) - End-to-end type safety
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + Custom theme system
+- **State**: Component state + LocalStorage persistence
+- **Language**: TypeScript 5.7 with strict mode
 - **Runtime**: [Bun](https://bun.sh/) - Fast JavaScript runtime
+- **Linting**: [Biome](https://biomejs.dev/) - Fast formatter/linter
+
+## Data Storage
+
+### LocalStorage Keys
+
+- `active-meeting-session`: Current meeting state
+  - Agenda items with progress
+  - Timer running state
+  - Timestamps for elapsed time calculation
+- `meeting-history`: Array of completed meetings (max 10)
+
+### Data Structures
+
+```typescript
+interface AgendaItem {
+  id: string;
+  name: string;
+  estimatedMinutes: number;
+  actualMinutes?: number;
+  isActive: boolean;
+  startTime?: number;
+  elapsedTime: number;
+}
+
+interface Meeting {
+  id: string;
+  date: string;
+  agendaItems: AgendaItem[];
+}
+```
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Code Style
+### Code Standards
 
-- Use tab indentation
+- Use tab indentation (enforced by Biome)
 - Use double quotes for strings
-- Run `bun run lint` before committing
-- All text must use the translation function
-- All colors must use theme-aware CSS variables
+- Run `bun run lint:fix` before committing
+- Document functions with JSDoc comments
+- Use translation function `t()` for all text
+- Use theme-aware CSS classes only
+- Maintain 44-48px touch targets
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 
 - Built with [TanStack](https://tanstack.com/) libraries
-- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- UI components inspired by [shadcn/ui](https://ui.shadcn.com/)
 - Icons from [Lucide](https://lucide.dev/)
+- Color system using OKLCH color space
 
 ---
 
