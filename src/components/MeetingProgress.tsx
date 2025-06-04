@@ -332,54 +332,6 @@ export function MeetingProgress({
         </div>
       )}
 
-      {/* Add new item form - allow even when timer is running */}
-      {isAddingNew ? (
-        <div className="p-4 bg-card border border-border rounded-lg">
-          <div className="space-y-3">
-            <input
-              type="text"
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
-              placeholder={t("agenda.topicNamePlaceholder")}
-            />
-            <div className="flex items-center gap-2">
-              <TimeInput
-                value={newItemTime}
-                onChange={setNewItemTime}
-                className="flex-shrink-0"
-              />
-              <div className="flex gap-2 ml-auto">
-                <button
-                  type="button"
-                  onClick={saveNewItem}
-                  className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-1"
-                >
-                  <Save className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={cancelAddNew}
-                  className="px-3 py-1 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={startAddNew}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            {t("agenda.add")}
-          </button>
-        </div>
-      )}
 
       {/* Visual timeline */}
       <div className="relative">
@@ -648,6 +600,55 @@ export function MeetingProgress({
             </div>
           );
         })}
+        
+        {/* Add new item form - positioned after all agenda items */}
+        {isAddingNew ? (
+          <div className="p-4 bg-card border border-border rounded-lg mt-4">
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={newItemName}
+                onChange={(e) => setNewItemName(e.target.value)}
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
+                placeholder={t("agenda.topicNamePlaceholder")}
+              />
+              <div className="flex items-center gap-2">
+                <TimeInput
+                  value={newItemTime}
+                  onChange={setNewItemTime}
+                  className="flex-shrink-0"
+                />
+                <div className="flex gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={saveNewItem}
+                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-1"
+                  >
+                    <Save className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancelAddNew}
+                    className="px-3 py-1 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center mt-4">
+            <button
+              type="button"
+              onClick={startAddNew}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              {t("agenda.add")}
+            </button>
+          </div>
+        )}
       </div>
       {/* Total time summary */}
       <div className="mt-6 p-4 bg-muted rounded-lg">
