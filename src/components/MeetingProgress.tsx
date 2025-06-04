@@ -2,6 +2,7 @@ import {
   CheckCircle2,
   Circle,
   Edit,
+  GripVertical,
   Play,
   Plus,
   Save,
@@ -29,6 +30,7 @@ interface MeetingProgressProps {
   onItemEdit?: (index: number, name: string, estimatedMinutes: number) => void;
   onItemDelete?: (index: number) => void;
   onItemAdd?: (name: string, estimatedMinutes: number) => void;
+  onItemReorder?: (fromIndex: number, toIndex: number) => void;
   onAddSample?: () => void;
   isTimerRunning?: boolean;
   getCurrentElapsed?: (item: AgendaItem) => number;
@@ -46,8 +48,9 @@ interface MeetingProgressProps {
  * @param onItemEdit - Callback to update an existing agenda item
  * @param onItemDelete - Callback to remove an agenda item
  * @param onItemAdd - Callback to create a new agenda item
+ * @param onItemReorder - Callback to reorder agenda items by drag and drop
  * @param onAddSample - Callback to populate with sample data
- * @param isTimerRunning - Whether the meeting timer is currently running (disables editing when true)
+ * @param isTimerRunning - Whether the meeting timer is currently running
  * @param getCurrentElapsed - Function to get current elapsed time for an item
  */
 export function MeetingProgress({
@@ -56,6 +59,7 @@ export function MeetingProgress({
   onItemEdit,
   onItemDelete,
   onItemAdd,
+  onItemReorder,
   onAddSample,
   isTimerRunning = false,
   getCurrentElapsed = () => 0,
@@ -67,6 +71,7 @@ export function MeetingProgress({
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemTime, setNewItemTime] = useState(5);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const totalEstimated = items.reduce(
     (sum, item) => sum + item.estimatedMinutes,
@@ -149,6 +154,49 @@ export function MeetingProgress({
     setNewItemTime(5);
   };
 
+  /**
+   * Handles drag start event for reordering agenda items.
+   * Records the index of the item being dragged.
+   * 
+   * @param index - Zero-based index of the item being dragged
+   */
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  /**
+   * Handles drag over event to allow dropping.
+   * Prevents default behavior to enable drop functionality.
+   * 
+   * @param e - Drag event object
+   */
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  /**
+   * Handles drop event for reordering agenda items.
+   * Calls parent callback to reorder items and resets drag state.
+   * 
+   * @param e - Drag event object
+   * @param dropIndex - Zero-based index where the item should be dropped
+   */
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== dropIndex && onItemReorder) {
+      onItemReorder(draggedIndex, dropIndex);
+    }
+    setDraggedIndex(null);
+  };
+
+  /**
+   * Handles drag end event to clean up drag state.
+   * Resets dragged index regardless of whether drop was successful.
+   */
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Empty state when no items */}
@@ -179,8 +227,8 @@ export function MeetingProgress({
         </div>
       )}
 
-      {/* Add new item form - disabled when timer is running */}
-      {isAddingNew && !isTimerRunning ? (
+      {/* Add new item form - allow even when timer is running */}
+      {isAddingNew ? (
         <div className="p-4 bg-card border border-border rounded-lg">
           <div className="space-y-3">
             <input
@@ -216,18 +264,16 @@ export function MeetingProgress({
           </div>
         </div>
       ) : (
-        !isTimerRunning && (
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={startAddNew}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              {t("agenda.add")}
-            </button>
-          </div>
-        )
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={startAddNew}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            {t("agenda.add")}
+          </button>
+        </div>
       )}
 
       {/* Visual timeline */}
@@ -235,9 +281,30 @@ export function MeetingProgress({
         {items.map((item, index) => {
           const isCompleted = !!item.actualMinutes;
           const isLast = index === items.length - 1;
+          const isDragging = draggedIndex === index;
 
           return (
-            <div key={item.id} className="flex items-start gap-4 group">
+            <div 
+              key={item.id} 
+              className={`flex items-start gap-4 group relative transition-all duration-200 ${
+                isDragging ? 'opacity-50 scale-95' : ''
+              }`}
+              draggable={onItemReorder && !item.isActive}
+              onDragStart={() => handleDragStart(index)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
+            >
+              {/* Drag handle */}
+              {onItemReorder && !item.isActive && (
+                <div 
+                  className="flex items-center cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+                  title="Drag to reorder"
+                >
+                  <GripVertical className="w-4 h-4" />
+                </div>
+              )}
+
               {/* Timeline connector */}
               <div className="relative flex flex-col items-center">
                 <button
@@ -318,7 +385,7 @@ export function MeetingProgress({
                       >
                         {item.name}
                       </h4>
-                      {!isTimerRunning && onItemEdit && onItemDelete && (
+                      {onItemEdit && onItemDelete && (
                         <div className="flex gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                           <button
                             type="button"
@@ -333,6 +400,7 @@ export function MeetingProgress({
                             onClick={() => onItemDelete(index)}
                             className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
                             title="Delete item"
+                            disabled={item.isActive}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

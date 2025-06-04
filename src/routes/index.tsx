@@ -358,6 +358,15 @@ function MeetingTimeTracker() {
     );
   };
 
+  const reorderAgendaItems = (fromIndex: number, toIndex: number) => {
+    setAgendaItems((items) => {
+      const newItems = [...items];
+      const [movedItem] = newItems.splice(fromIndex, 1);
+      newItems.splice(toIndex, 0, movedItem);
+      return newItems;
+    });
+  };
+
   const totalElapsed = agendaItems.reduce((sum, item) => {
     if (item.actualMinutes) return sum + item.actualMinutes * 60000;
     return sum + getCurrentElapsed(item);
@@ -460,6 +469,7 @@ function MeetingTimeTracker() {
             onItemDelete={(index) => {
               deleteAgendaItem(agendaItems[index].id);
             }}
+            onItemReorder={reorderAgendaItems}
             onItemAdd={(name, estimatedMinutes) => {
               const newItem: AgendaItem = {
                 id: Date.now().toString(),
