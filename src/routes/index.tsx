@@ -457,7 +457,7 @@ function MeetingTimeTracker() {
 
             {/* Control buttons below timer */}
             <div className="flex gap-2 flex-wrap justify-center mt-4">
-              {!isRunning ? (
+              {!isRunning && (
                 <button
                   type="button"
                   onClick={startMeeting}
@@ -465,15 +465,6 @@ function MeetingTimeTracker() {
                 >
                   <Play size={18} />
                   {t("button.startMeeting")}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={pauseMeeting}
-                  className="px-6 py-3 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2 min-h-[48px] font-medium"
-                >
-                  <Pause size={18} />
-                  {t("button.pause")}
                 </button>
               )}
               {hasPreviousItem() && (
@@ -592,7 +583,17 @@ function MeetingTimeTracker() {
           />
 
           {/* Secondary actions */}
-          <div className="mt-6 pt-4 border-t border-border flex justify-center">
+          <div className="mt-6 pt-4 border-t border-border flex justify-center gap-3">
+            {isRunning && (
+              <button
+                type="button"
+                onClick={pauseMeeting}
+                className="px-4 py-2 bg-yellow-600 dark:bg-yellow-600 text-white rounded-md hover:bg-yellow-700 dark:hover:bg-yellow-700 transition-colors flex items-center gap-2 text-sm"
+              >
+                <Pause size={16} />
+                {t("button.pause")}
+              </button>
+            )}
             <button
               type="button"
               onClick={resetMeeting}
