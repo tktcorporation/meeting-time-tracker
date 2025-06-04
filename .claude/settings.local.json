@@ -22,7 +22,9 @@
       "Bash(biome check:*)",
       "Bash(bun test:*)",
       "Bash(bun list:*)",
-      "Bash(npx vitest run:*)"
+      "Bash(npx vitest run:*)",
+      "Bash(mkdir:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }

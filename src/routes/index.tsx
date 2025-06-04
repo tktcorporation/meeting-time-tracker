@@ -8,174 +8,40 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { MeetingProgress } from "../components/MeetingProgress";
 import { MeetingTimer } from "../components/MeetingTimer";
 import { useLanguage } from "../contexts/LanguageContext";
+import { type AgendaItem, useMeetingState } from "../hooks/useMeetingState";
+import { useTimeCalculations } from "../hooks/useTimeCalculations";
+import { useTimerState } from "../hooks/useTimerState";
 
 export const Route = createFileRoute("/")({
   component: MeetingTimeTracker,
 });
 
-interface AgendaItem {
-  id: string;
-  name: string;
-  estimatedMinutes: number;
-  actualMinutes?: number;
-  isActive: boolean;
-  startTime?: number;
-  elapsedTime: number;
-}
-
-interface Meeting {
-  id: string;
-  date: string;
-  agendaItems: AgendaItem[];
-}
-
 function MeetingTimeTracker() {
   const { t } = useLanguage();
-  const [agendaItems, setAgendaItems] = useState<AgendaItem[]>(() => {
-    // Try to restore active session from localStorage
-    const savedSession = localStorage.getItem("active-meeting-session");
-    if (savedSession) {
-      try {
-        const session = JSON.parse(savedSession);
-        // Update elapsed times based on saved timestamps
-        return session.agendaItems.map((item: AgendaItem) => {
-          if (item.isActive && item.startTime) {
-            // Calculate elapsed time since browser was closed
-            const additionalElapsed = Date.now() - item.startTime;
-            return {
-              ...item,
-              elapsedTime: item.elapsedTime + additionalElapsed,
-              startTime: Date.now(), // Reset start time to now
-            };
-          }
-          return item;
-        });
-      } catch (e) {
-        console.error("Failed to restore session:", e);
-      }
-    }
 
-    // Initialize with sample data if no saved session
-    const now = Date.now();
-    return [
-      {
-        id: `sample_${now}_1`,
-        name: "プロジェクト概要説明",
-        estimatedMinutes: 5,
-        isActive: false,
-        elapsedTime: 0,
-      },
-      {
-        id: `sample_${now}_2`,
-        name: "進捗報告",
-        estimatedMinutes: 10,
-        isActive: false,
-        elapsedTime: 0,
-      },
-      {
-        id: `sample_${now}_3`,
-        name: "課題とディスカッション",
-        estimatedMinutes: 15,
-        isActive: false,
-        elapsedTime: 0,
-      },
-      {
-        id: `sample_${now}_4`,
-        name: "次回アクション確認",
-        estimatedMinutes: 5,
-        isActive: false,
-        elapsedTime: 0,
-      },
-    ];
-  });
-  const [isRunning, setIsRunning] = useState(() => {
-    // Restore running state from localStorage
-    const savedSession = localStorage.getItem("active-meeting-session");
-    if (savedSession) {
-      try {
+  // Initialize timer state with restored running state from localStorage
+  const initialIsRunning = (() => {
+    try {
+      const savedSession = localStorage.getItem("active-meeting-session");
+      if (savedSession) {
         const session = JSON.parse(savedSession);
         return session.isRunning || false;
-      } catch (e) {
-        return false;
       }
+    } catch (e) {
+      // Ignore errors and default to false
     }
     return false;
-  });
-  const [currentTime, setCurrentTime] = useState(Date.now());
-  const [meetingHistory, setMeetingHistory] = useState<Meeting[]>([]);
+  })();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("meeting-history");
-    if (saved) {
-      setMeetingHistory(JSON.parse(saved));
-    }
-  }, []);
-
-  // Save active session to localStorage whenever state changes
-  useEffect(() => {
-    const sessionData = {
-      agendaItems,
-      isRunning,
-      savedAt: Date.now(),
-    };
-    localStorage.setItem("active-meeting-session", JSON.stringify(sessionData));
-  }, [agendaItems, isRunning]);
-
-  useEffect(() => {
-    let interval: number | undefined;
-    if (isRunning) {
-      interval = window.setInterval(() => {
-        setCurrentTime(Date.now());
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isRunning]);
-
-  // Handle tab visibility changes to pause/resume timer properly
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.hidden && isRunning) {
-        // Tab is being hidden, save current state with timestamps
-        setAgendaItems((items) =>
-          items.map((item) => {
-            if (item.isActive && item.startTime) {
-              // Save elapsed time up to this point
-              return {
-                ...item,
-                elapsedTime: item.elapsedTime + (Date.now() - item.startTime),
-                startTime: Date.now(), // Will be recalculated on restore
-              };
-            }
-            return item;
-          }),
-        );
-      } else if (!document.hidden && isRunning) {
-        // Tab is becoming visible, restore with fresh timestamp
-        setAgendaItems((items) =>
-          items.map((item) => {
-            if (item.isActive) {
-              return {
-                ...item,
-                startTime: Date.now(), // Fresh start time
-              };
-            }
-            return item;
-          }),
-        );
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [isRunning]);
+  const { isRunning, currentTime, setIsRunning } =
+    useTimerState(initialIsRunning);
+  const { agendaItems, setAgendaItems, saveMeeting, resetSession } =
+    useMeetingState(isRunning);
+  const { getCurrentElapsed, totalElapsed, totalEstimated } =
+    useTimeCalculations(agendaItems, currentTime, isRunning, setAgendaItems);
 
   const startMeeting = () => {
     if (agendaItems.length > 0 && !isRunning) {
@@ -290,10 +156,10 @@ function MeetingTimeTracker() {
         items.map((item, index) => {
           if (index === targetIndex) {
             // If item was completed, restore its elapsed time from actualMinutes
-            const restoredElapsedTime = item.actualMinutes 
+            const restoredElapsedTime = item.actualMinutes
               ? item.actualMinutes * 60000 // Convert minutes back to milliseconds
               : item.elapsedTime; // Use existing elapsed time if not completed
-            
+
             return {
               ...item,
               isActive: true,
@@ -317,35 +183,7 @@ function MeetingTimeTracker() {
 
   const resetMeeting = () => {
     setIsRunning(false);
-    setAgendaItems((items) =>
-      items.map((item) => ({
-        ...item,
-        isActive: false,
-        actualMinutes: undefined,
-        startTime: undefined,
-        elapsedTime: 0,
-      })),
-    );
-    // Clear the active session from localStorage
-    localStorage.removeItem("active-meeting-session");
-  };
-
-  const saveMeeting = () => {
-    if (
-      agendaItems.length > 0 &&
-      agendaItems.some((item) => item.actualMinutes)
-    ) {
-      const meeting: Meeting = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        agendaItems: agendaItems.filter((item) => item.actualMinutes),
-      };
-      const updatedHistory = [meeting, ...meetingHistory].slice(0, 10);
-      setMeetingHistory(updatedHistory);
-      localStorage.setItem("meeting-history", JSON.stringify(updatedHistory));
-      // Clear active session after saving
-      localStorage.removeItem("active-meeting-session");
-    }
+    resetSession();
   };
 
   // const loadMeeting = (meeting: Meeting) => {
@@ -359,13 +197,6 @@ function MeetingTimeTracker() {
   //   );
   //   setIsRunning(false);
   // };
-
-  const getCurrentElapsed = (item: AgendaItem): number => {
-    if (item.isActive && item.startTime) {
-      return item.elapsedTime + (currentTime - item.startTime);
-    }
-    return item.elapsedTime;
-  };
 
   // const formatTime = (minutes: number): string => {
   //   const mins = Math.floor(minutes);
@@ -393,7 +224,7 @@ function MeetingTimeTracker() {
     agendaItems.length > 0 && agendaItems.every((item) => item.actualMinutes);
   const hasActiveItem = agendaItems.some((item) => item.isActive);
   const hasNextItem = agendaItems.some((item) => !item.actualMinutes);
-  
+
   const hasPreviousItem = () => {
     const currentActiveIndex = agendaItems.findIndex((item) => item.isActive);
     if (currentActiveIndex > 0) {
@@ -431,16 +262,6 @@ function MeetingTimeTracker() {
       return newItems;
     });
   };
-
-  const totalElapsed = agendaItems.reduce((sum, item) => {
-    if (item.actualMinutes) return sum + item.actualMinutes * 60000;
-    return sum + getCurrentElapsed(item);
-  }, 0);
-
-  const totalEstimated = agendaItems.reduce(
-    (sum, item) => sum + item.estimatedMinutes,
-    0,
-  );
 
   return (
     <div className="min-h-screen bg-background">

@@ -103,7 +103,10 @@ export function Header() {
       </header>
 
       {/* Mobile bottom navigation */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border safe-area-pb" style={{ zIndex: 'var(--z-navigation)' }}>
+      <nav
+        className="sm:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border safe-area-pb"
+        style={{ zIndex: "var(--z-navigation)" }}
+      >
         <div className="grid grid-cols-3 h-16">
           <Link
             to="/"

@@ -587,37 +587,39 @@ export function MeetingProgress({
                           })()}
                         </span>
                       )}
-                      {!item.isActive && !item.actualMinutes && item.elapsedTime > 0 && (
-                        <span className="text-sm font-medium text-muted-foreground">
-                          {(() => {
-                            const elapsedMs = item.elapsedTime;
-                            const estimatedMs = item.estimatedMinutes * 60000;
-                            const remainingMs = Math.max(
-                              0,
-                              estimatedMs - elapsedMs,
-                            );
-                            const isOvertime = elapsedMs > estimatedMs;
+                      {!item.isActive &&
+                        !item.actualMinutes &&
+                        item.elapsedTime > 0 && (
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {(() => {
+                              const elapsedMs = item.elapsedTime;
+                              const estimatedMs = item.estimatedMinutes * 60000;
+                              const remainingMs = Math.max(
+                                0,
+                                estimatedMs - elapsedMs,
+                              );
+                              const isOvertime = elapsedMs > estimatedMs;
 
-                            if (isOvertime) {
-                              const overtimeMs = elapsedMs - estimatedMs;
-                              const overtimeMin = Math.floor(
-                                overtimeMs / 60000,
+                              if (isOvertime) {
+                                const overtimeMs = elapsedMs - estimatedMs;
+                                const overtimeMin = Math.floor(
+                                  overtimeMs / 60000,
+                                );
+                                const overtimeSec = Math.floor(
+                                  (overtimeMs % 60000) / 1000,
+                                );
+                                return `+${overtimeMin}:${overtimeSec.toString().padStart(2, "0")} (paused)`;
+                              }
+                              const remainingMin = Math.floor(
+                                remainingMs / 60000,
                               );
-                              const overtimeSec = Math.floor(
-                                (overtimeMs % 60000) / 1000,
+                              const remainingSec = Math.floor(
+                                (remainingMs % 60000) / 1000,
                               );
-                              return `+${overtimeMin}:${overtimeSec.toString().padStart(2, "0")} (paused)`;
-                            }
-                            const remainingMin = Math.floor(
-                              remainingMs / 60000,
-                            );
-                            const remainingSec = Math.floor(
-                              (remainingMs % 60000) / 1000,
-                            );
-                            return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left (paused)`;
-                          })()}
-                        </span>
-                      )}
+                              return `${remainingMin}:${remainingSec.toString().padStart(2, "0")} left (paused)`;
+                            })()}
+                          </span>
+                        )}
                       {item.actualMinutes && (
                         <span
                           className={`text-sm font-medium
