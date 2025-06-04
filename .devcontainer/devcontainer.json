@@ -18,7 +18,11 @@
 	"runArgs": ["--env-file", ".devcontainer/devcontainer.env"],
 	"customizations": {
 		"vscode": {
-			"extensions": ["mhutchie.git-graph", "WakaTime.vscode-wakatime"],
+			"extensions": [
+				"mhutchie.git-graph",
+				"WakaTime.vscode-wakatime",
+				"GitHub.copilot"
+			],
 			"files.watcherExclude": {
 				"**/.git/*/**": true,
 				"**/node_modules/*/**": true
